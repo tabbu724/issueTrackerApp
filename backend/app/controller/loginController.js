@@ -75,7 +75,7 @@ let signup = (req, res) => {
                             delete newUserObject.password
                             delete newUserObject._id
                             delete newUserObject.__v
-                            let infoLog = loggerLib.captureInfo('New User created successfully', 10, '/loginController/signup/validateInputs')
+                            let infoLog = loggerLib.captureInfo('New User created successfully', 10, '/loginController/signup/createUser')
                             console.log(infoLog);
                             resolve(newUserObject)
                         }

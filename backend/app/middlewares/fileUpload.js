@@ -2,7 +2,6 @@ const aws = require('aws-sdk')
     , config = require('../../config/appConfig')
 
 let fileUploader = (req, res, next) => {
-    console.log(req.files);
     let s3Bucket = new aws.S3({
         accessKeyId: config.configuration.AWS_ACCESS_KEY_ID,
         secretAccessKey: config.configuration.AWS_SECRET_ACCESS_KEY,
@@ -44,12 +43,12 @@ let fileUploader = (req, res, next) => {
 
 
         Promise.all(uploadedDataArray).then((fileUrls) => {
-            req.attachments = fileurls
-            res.end('success')
+
+            req.attachments = fileUrls
+
             next()
         })
             .catch((err) => {
-                res.send(err)
                 next();
             })
     }

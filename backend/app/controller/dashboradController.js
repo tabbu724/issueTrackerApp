@@ -2,10 +2,11 @@ const issueModel = require('../models/issueDetails')
     , responseLib = require('../libraries/responseFormatter')
     , checkLib = require('../libraries/checkLib')
     , shortid = require('shortid')
-userModel = require('../models/user')
+    ,userModel = require('../models/user')
+    ,timeLib=require('../libraries/dateTimeLib')
 
 let dashboardInfo = (req, res) => {
-    issueModel.find({ assigneeId: req.user.userId }, (err, issueDetails) => {
+    issueModel.find({ assigneeId: req.params.userId }, (err, issueDetails) => {
         if (err) {
             let response = responseLib.formatResponse(true, 'Error in finding issues assigned to you.', 500, null)
             res.send(response)
@@ -73,7 +74,12 @@ let filterRowsByReporterId = (req, res) => {
 }
 
 let filterRowsByDate = (req, res) => {
-    issueModel.find({ createdOn: req.params.createdOn }, (err, dateBasedIssueDetails) => {
+    
+    let formattedDate=timeLib.parseToMyFormat(req.params.creationDate)
+    console.log(formattedDate);
+    
+    issueModel.find({creationDateString:formattedDate}
+        , (err, dateBasedIssueDetails) => {
         if (err) {
             let response = responseLib.formatResponse(true, 'Error in finding issues with this date.', 500, null)
             res.send(response)
@@ -90,10 +96,12 @@ let filterRowsByDate = (req, res) => {
 }
 
 let sortCols = (req, res) => {
-    let status = req.params.status || null
-        , createdOn = req.params.createdOn || null
-        , reporterId = req.params.reporterId || null
-        , title = req.params.title || null
+    
+    let status = req.body.status.toLowerCase()==='true'?'status':null
+        , createdOn = req.body.createdOn.toLowerCase()==='true'?'createdOn':null
+        , reporterId = req.body.reporterId.toLowerCase()==='true'?'reporterId':null
+        , title = req.body.title.toLowerCase()==='true'?'title':null
+        
     issueModel.find({}, (err, sortResult) => {
         if (err) {
             let response = responseLib.formatResponse(true, 'Error in sorting rows.', 500, null)
@@ -107,41 +115,45 @@ let sortCols = (req, res) => {
             let response = responseLib.formatResponse(false, 'Sorting done on basis of given cols.', 200, sortResult)
             res.send(response)
         }
-    }).sort(`${status} ${createdOn} ${reporterId} ${title}`)
+    })
+    .sort(`${status} ${createdOn} ${reporterId} ${title}`)
 }
 
 let createIssue = (req, res) => {
-    let assigneeId
-    userModel.find({ userName: req.body.username }, (err, userData) => {
+    userModel.findOne({ userName: req.body.username }, (err, userData) => {
         if (err) {
             console.log(err);
         }
-        else {
-            assigneeId = userData.userId
+        else {  
+            // console.log(userData);
+                    
+            let assigneeId = userData.userId
+            // console.log('assigneeId',assigneeId);
+            let newIssue = new issueModel({
+                issueId: shortid.generate(),
+                status: req.body.status,
+                title: req.body.title,
+                reporterId: req.body.userId,
+                assigneeId: assigneeId,
+                attachmentUrls: req.attachments
+            })
+            newIssue.save((err, newIssueData) => {
+                if (err) {
+                    let response = responseLib.formatResponse(true, 'Error in creating new issue.', 500, null)
+                    res.send(response);
+        
+                }
+                else {
+                    let newIssueDataObject = newIssueData.toObject()
+                    delete newIssueDataObject._id
+                    delete newIssueDataObject.__v
+                    let response = responseLib.formatResponse(true, 'New issue has been created.', 200, newIssueDataObject)
+                    res.send(response);
+                }
+            })
         }
     })
-    let newIssue = new issueModel({
-        issueId: shortid.generate(),
-        status: req.body.status,
-        title: req.body.title,
-        reporterId: req.user.userId,
-        assigneeId: assigneeId,
-        attachmentUrls: req.attachments
-    })
-    newIssue.save((err, newIssueData) => {
-        if (err) {
-            let response = responseLib.formatResponse(true, 'Error in creating new issue.', 500, null)
-            res.send(response);
-
-        }
-        else {
-            let newIssueDataObject = newIssueData.toObject()
-            delete newIssueDataObject._id
-            delete newIssueDataObject.__v
-            let response = responseLib.formatResponse(true, 'New issue has been created.', 200, newIssueData)
-            res.send(response);
-        }
-    })
+  
 }
 
 module.exports = {

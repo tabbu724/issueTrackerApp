@@ -1,9 +1,9 @@
-const moment =require('moment')
+const timeLib =require('../libraries/dateTimeLib')
 const logger = require('pino')()
 
 let captureError=(errMessage,errLevel,errOrigin)=>{
 let errorResponse={
-    timestamp:moment(),
+    timestamp:timeLib.now(),
     errMessage:errMessage,
     errLevel:errLevel,
     errOrigin:errOrigin
@@ -14,7 +14,7 @@ return errorResponse
 
 let captureInfo=(message,level,origin)=>{
     let infoResponse={
-        timestamp:moment(),
+        timestamp:timeLib.now(),
         message:message,
         level:level,
         origin:origin

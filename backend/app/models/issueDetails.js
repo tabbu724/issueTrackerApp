@@ -19,9 +19,13 @@ let issueDetailsSchema = new schema({
     assigneeId: {
         type: String
     },
-    createdOn: {
+    creationDate: {
         type: Date,
         default:timeLib.now()
+    },
+    creationDateString: {
+        type: String,
+        default:timeLib.formatCurrentDate()
     },
     attachmentUrls: []//array of s3 urls
 })

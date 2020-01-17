@@ -28,9 +28,14 @@ let setRouter = (app) => {
 
   app.get('/auth/google/callback',
     passport.authenticate('google', { successRedirect: baseUrl + '/dashboard' }));
-
-  app.get(baseUrl+'/multi',dashboardController.sortCols)
-  app.post(baseUrl+'/upload',upload.any(),uploadMiddleware.fileUploader,dashboardController.createIssue)
+// dasboard routes
+app.get(baseUrl+'/dashboard/:userId',dashboardController.dashboardInfo)
+app.get(baseUrl+'/filterByStatus/:status',dashboardController.filterRowsByStatus)
+app.get(baseUrl+'/filterByDate/:creationDate',dashboardController.filterRowsByDate)
+app.get(baseUrl+'/filterByReporterId/:reporterId',dashboardController.filterRowsByReporterId)
+app.get(baseUrl+'/filterByTitle/:title',dashboardController.filterRowsByTitle)
+  app.post(baseUrl+'/multi',dashboardController.sortCols)
+  app.post(baseUrl+'/createIssue',upload.any(),uploadMiddleware.fileUploader,dashboardController.createIssue)
 }
 
 module.exports = {
