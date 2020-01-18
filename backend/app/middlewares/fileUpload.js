@@ -19,7 +19,12 @@ let fileUploader = (req, res, next) => {
                 }
                 else {
 
-                    resolve(data.Location)
+let dataObject={
+    fileName:data.Key.split('/')[1],
+    fileUrl:data.Location
+}
+// console.log('upload data -',dataObject);
+                    resolve(dataObject)
 
                 }
             })
@@ -43,12 +48,14 @@ let fileUploader = (req, res, next) => {
 
 
         Promise.all(uploadedDataArray).then((fileUrls) => {
+// console.log(fileUrls);
 
             req.attachments = fileUrls
 
             next()
         })
             .catch((err) => {
+                req.uploadErr=err
                 next();
             })
     }

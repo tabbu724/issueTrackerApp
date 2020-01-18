@@ -1,6 +1,7 @@
 const config = require('../../config/appConfig')
   , controller = require('../controller/loginController')
   ,dashboardController=require('../controller/dashboradController')
+  ,issueController=require('../controller/issueController')
   , passport = require('passport')
   ,multer=require('multer')
   ,storage=multer.memoryStorage()
@@ -28,7 +29,7 @@ let setRouter = (app) => {
 
   app.get('/auth/google/callback',
     passport.authenticate('google', { successRedirect: baseUrl + '/dashboard' }));
-// dasboard routes
+// dashboard routes
 app.get(baseUrl+'/dashboard/:userId',dashboardController.dashboardInfo)
 app.get(baseUrl+'/filterByStatus/:status',dashboardController.filterRowsByStatus)
 app.get(baseUrl+'/filterByDate/:creationDate',dashboardController.filterRowsByDate)
@@ -36,6 +37,10 @@ app.get(baseUrl+'/filterByReporterId/:reporterId',dashboardController.filterRows
 app.get(baseUrl+'/filterByTitle/:title',dashboardController.filterRowsByTitle)
   app.post(baseUrl+'/multi',dashboardController.sortCols)
   app.post(baseUrl+'/createIssue',upload.any(),uploadMiddleware.fileUploader,dashboardController.createIssue)
+// issue description routes
+app.post(baseUrl+'/editIssue',upload.any(),uploadMiddleware.fileUploader,issueController.editIssueDetails)
+app.post(baseUrl+'/comment',issueController.commentOnIssue)
+
 }
 
 module.exports = {

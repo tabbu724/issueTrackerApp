@@ -13,6 +13,9 @@ let issueDetailsSchema = new schema({
     title: {
         type: String
     },
+    description:{
+        type:String
+    },
     reporterId: {
         type: String
     },
@@ -27,7 +30,10 @@ let issueDetailsSchema = new schema({
         type: String,
         default:timeLib.formatCurrentDate()
     },
-    attachmentUrls: []//array of s3 urls
+    attachmentUrls: {
+        type:Array
+    }
+    //array of s3 urls
 })
 
 module.exports = mongoose.model('issueModel', issueDetailsSchema, 'issueCollection')

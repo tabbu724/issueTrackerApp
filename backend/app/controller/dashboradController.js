@@ -120,40 +120,66 @@ let sortCols = (req, res) => {
 }
 
 let createIssue = (req, res) => {
-    userModel.findOne({ userName: req.body.username }, (err, userData) => {
-        if (err) {
-            console.log(err);
+    if(req.uploadErr!=undefined){
+        let response = responseLib.formatResponse(true, `Upload Error: ${req.uploadErr.message}`, 500, null)
+                    res.send(response);
+    }
+    else{
+        userModel.findOne({ userName: req.body.username }, (err, userData) => {
+            if (err) {
+                console.log(err);
+            }
+            else {  
+                // console.log(userData);
+                        
+                let assigneeId = userData.userId
+                
+                // console.log('assigneeId',assigneeId);
+                let newIssue = new issueModel({
+                    issueId: shortid.generate(),
+                    status: req.body.status,
+                    title: req.body.title,
+                    reporterId: req.body.userId,
+                    assigneeId: assigneeId,
+                    attachmentUrls: req.attachments,
+                    description:req.body.description
+                })
+                newIssue.save((err, newIssueData) => {
+                    if (err) {
+                        let response = responseLib.formatResponse(true, 'Error in creating new issue.', 500, null)
+                        res.send(response);
+            
+                    }
+                    else {
+                        let newIssueDataObject = newIssueData.toObject()
+                        delete newIssueDataObject._id
+                        delete newIssueDataObject.__v
+                        let response = responseLib.formatResponse(false, 'New issue has been created.', 200, newIssueDataObject)
+                        res.send(response);
+                    }
+                })
+            }
+        })
+    }
+    
+  
+}
+
+let issueDescriptionViewInfo=(req,res)=>{
+    issueModel.findOne({issueId:req.params.issueId},(err,issueInfo)=>{
+        if(err){
+            let response = responseLib.formatResponse(true, 'Error in finding requested issue details.', 500, null)
+            res.send(response);
         }
-        else {  
-            // console.log(userData);
-                    
-            let assigneeId = userData.userId
-            // console.log('assigneeId',assigneeId);
-            let newIssue = new issueModel({
-                issueId: shortid.generate(),
-                status: req.body.status,
-                title: req.body.title,
-                reporterId: req.body.userId,
-                assigneeId: assigneeId,
-                attachmentUrls: req.attachments
-            })
-            newIssue.save((err, newIssueData) => {
-                if (err) {
-                    let response = responseLib.formatResponse(true, 'Error in creating new issue.', 500, null)
-                    res.send(response);
-        
-                }
-                else {
-                    let newIssueDataObject = newIssueData.toObject()
-                    delete newIssueDataObject._id
-                    delete newIssueDataObject.__v
-                    let response = responseLib.formatResponse(true, 'New issue has been created.', 200, newIssueDataObject)
-                    res.send(response);
-                }
-            })
+        else if(checkLib.isEmpty(issueInfo)){
+            let response = responseLib.formatResponse(true, 'No such issue exists .', 404, null)
+            res.send(response)
+        }
+        else{
+            let response = responseLib.formatResponse(false, 'Requested issue details have been found.', 200, issueInfo)
+                res.send(response);
         }
     })
-  
 }
 
 module.exports = {
@@ -163,5 +189,6 @@ module.exports = {
     filterRowsByReporterId: filterRowsByReporterId,
     filterRowsByDate: filterRowsByDate,
     sortCols: sortCols,
-    createIssue: createIssue
+    createIssue: createIssue,
+    issueDescriptionViewInfo:issueDescriptionViewInfo
 }
