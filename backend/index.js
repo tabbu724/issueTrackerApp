@@ -13,7 +13,7 @@ const express = require('express')
     , passport = require('passport')
     , expressSession = require('express-session')
     , loginController = require('./app/controller/loginController')
-
+,path=require('path')
 
 
 // creating object of the module class
@@ -42,10 +42,12 @@ app.use(passport.session())
 
 
 
-
 app.use(errAndNotFound.errorHandler)
 app.use(routeLogger.routeIpLogger)
 app.use(helmet())
+
+// static content
+app.use(express.static(path.join(__dirname,'clientSide')))
 
 // searching the each file of directory to import routes
 const dirPath = './app/routes'
@@ -107,6 +109,9 @@ process.on('unhandledRejection', (reason, p) => {
 
 })
 
+const socketLib=require('../backend/app/libraries/socketLib')
+socketLib.sendNotification(server)
+// console.log(socket['id']);
 
 
 mongoose.connection.on('open', (err) => {
@@ -121,3 +126,7 @@ mongoose.connection.on('open', (err) => {
 mongoose.connection.on('error', (err) => {
     console.log('--some error in db connection--', err);
 })
+
+module.exports={
+    server:server
+}

@@ -8,12 +8,11 @@
         <a href="http://localhost:3000/auth/google">login via google</a>
     </button>
 
-
     <script src="./jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
+    <script >
     const socket=io('http://localhost:3000')
-let userId='106618984403917733636'
+let userId='2687787044649693'
 socket.on(userId,(info)=>{
     console.log('received notification',info);
     

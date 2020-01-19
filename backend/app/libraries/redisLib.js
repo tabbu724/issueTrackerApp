@@ -6,8 +6,8 @@ redisClient.on('connect',()=>{
     console.log('Redis connection successfull.');
 })
 
-let createComments=(hashname,key,value,cb)=>{
-    console.log(hashname,key,value);
+let createHash=(hashname,key,value,cb)=>{
+    // console.log(hashname,key,value);
     
     redisClient.hmset(hashname,key,value,(err,result)=>{
         if (err) {
@@ -26,7 +26,7 @@ let createComments=(hashname,key,value,cb)=>{
     })
 }
 
-let showComments=(hashname,cb)=>{
+let showHash=(hashname,cb)=>{
     redisClient.hgetall(hashname, (err, result) => {
         if (err) {
             console.log('error in getting all comments');
@@ -45,7 +45,9 @@ let showComments=(hashname,cb)=>{
 }
 
 
+
+
 module.exports={
-    createComments:createComments,
-    showComments:showComments
+    createHash:createHash,
+    showHash:showHash
 }

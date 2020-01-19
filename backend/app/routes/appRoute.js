@@ -40,7 +40,8 @@ app.get(baseUrl+'/filterByTitle/:title',dashboardController.filterRowsByTitle)
 // issue description routes
 app.post(baseUrl+'/editIssue',upload.any(),uploadMiddleware.fileUploader,issueController.editIssueDetails)
 app.post(baseUrl+'/comment',issueController.commentOnIssue)
-
+app.post(baseUrl+'/addAsWatcher',issueController.addWatcher)
+app.get(baseUrl+'/listWatchers/:issueId',issueController.listAllWatcher)
 }
 
 module.exports = {

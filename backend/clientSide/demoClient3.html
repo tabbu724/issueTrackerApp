@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>Social login</title>
+    </head>
+<body>
+    <button>
+        <a href="http://localhost:3000/auth/facebook">login via fb</a>
+        <a href="http://localhost:3000/auth/google">login via google</a>
+    </button>
+
+    <script src="./jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script >
+    const socket=io('http://localhost:3000')
+let userId='2687787044649693'
+
+let authToken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJ0bkdLLW0wTCIsImlhdCI6MTU3OTAwMzA1NTI1MiwiZXhwIjoxNTc5MDg5NDU1LCJzdWIiOiJhdXRoVG9rZW4iLCJpc3MiOiJUYWJidSBTZWhnYWwiLCJkYXRhIjp7InVzZXJJZCI6IjI2ODc3ODcwNDQ2NDk2OTMiLCJ1c2VyTmFtZSI6IlRhYmJ1QFo5UiIsImVtYWlsIjpudWxsfX0.WnXCXRcbQ5SXo21eLp4avz5p1ArCf9FXP3lZAmXbNfE'
+
+let updatedDetails={
+    issueId:'C5vl_fLG',
+    reporterId: "DHvRE6KW",
+    assigneeId: "106618984403917733636",
+    msg:'details of issue updated'
+}
+socket.on('verifyUser',()=>{
+    console.log('user verify event listened.');
+    socket.emit('set-user',userId)
+    socket.on('online-status',(msg)=>{
+    console.log(msg);
+    
+})
+
+socket.emit('issueUpdated',updatedDetails)
+
+socket.on(userId,(info)=>{
+    console.log('received notification',info);
+    
+})
+})
+
+
+    </script>
+</body>
+    
+</html>
