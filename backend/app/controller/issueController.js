@@ -76,7 +76,7 @@ let editIssueDetails = (req, res) => {
 }
 
 let assignIssueToOthers = (req, res) => {
-    userModel.findOne({ userName: req.params.username }, (err, userData) => {
+    userModel.findOne({ userName: req.body.username }, (err, userData) => {
         if (err) {
             console.log(err);
         }
@@ -88,16 +88,17 @@ let assignIssueToOthers = (req, res) => {
             let newAssigneeInfo = {
                 assigneeId: userData.userId
             }
-            issueModel.updateOne({ issueId: req.params.issueId }, newAssigneeInfo, (err, updatedDetails) => {
+            issueModel.updateOne({ issueId: req.body.issueId }, newAssigneeInfo, (err, updatedDetails) => {
                 if (err) {
                     let response = responseLib.formatResponse(true, err.message, 500, null)
                     res.send(response);
                 }
                 else if (checkLib.isEmpty(updatedDetails)) {
-                    let response = responseLib.formatResponse(true, 'No updated details available.', 404, null)
+                    let response = responseLib.formatResponse(true, 'This issue is already assigned to this user.', 404, null)
                     res.send(response);
                 }
                 else {
+                    updatedDetails.notifyMsg=`Issue with id : ${req.body.issueId} has been assigned to ${req.body.username}.`
                     let response = responseLib.formatResponse(false, 'Assignee updated successfully.', 200, updatedDetails)
                     res.send(response)
                 }
@@ -111,8 +112,8 @@ let commentOnIssue = (req, res) => {
     let commentId = shortid.generate()
     let commentDetails = {
         comment: req.body.comment,
-        userId: req.body.userId,
-        commentDate: timeLib.now()
+        userName: req.body.username,
+        commentDate: timeLib.formatCurrentDate()
     }
     redisLib.createHash(req.body.issueId + '{Comment-list}', commentId, JSON.stringify(commentDetails), (err, commentCreationStatus) => {
         if (err) {
@@ -137,7 +138,10 @@ let commentOnIssue = (req, res) => {
 
                     // console.log('created commentInfo-> ',JSON.parse(commentData[commentId]));
 
-                    let response = responseLib.formatResponse(false, 'comment created successfully.', 200, JSON.parse(commentData[commentId]))
+                    let commentObject=JSON.parse(commentData[commentId])
+                    
+                    commentObject['notifyMsg']=`${req.body.username} commented on issue with id : ${req.body.issueId} .`
+                    let response = responseLib.formatResponse(false, 'comment created successfully.', 200, commentObject)
                     res.send(response)
                 }
             })
@@ -158,7 +162,12 @@ let addWatcher = (req, res) => {
             res.send(response);
         }
         else {
-            let response = responseLib.formatResponse(false, 'You are added as a watcher successfully.', 200, additionStatus)
+            console.log(typeof additionStatus);
+            let details={
+                additionStatus:additionStatus,
+                notifyMsg:`${req.body.userName} is a watcher to issue with issue id :${req.body.issueId}. `
+            }
+            let response = responseLib.formatResponse(false, 'You are added as a watcher successfully.', 200, details)
             res.send(response)
         }
     })

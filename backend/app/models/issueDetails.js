@@ -30,10 +30,17 @@ let issueDetailsSchema = new schema({
         type: String,
         default:timeLib.formatCurrentDate()
     },
-    attachmentUrls: {
-        type:Array
-    }
+    attachmentUrls: [
+        {
+            fileName:{
+                type:String
+            },
+            fileUrl:String
+        }
+    ]
     //array of s3 urls
 })
+
+issueDetailsSchema.index({"$**": "text"})
 
 module.exports = mongoose.model('issueModel', issueDetailsSchema, 'issueCollection')

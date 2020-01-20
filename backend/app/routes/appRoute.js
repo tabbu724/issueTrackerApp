@@ -7,6 +7,7 @@ const config = require('../../config/appConfig')
   ,storage=multer.memoryStorage()
 ,upload=multer({storage:storage})
 ,uploadMiddleware=require('../middlewares/fileUpload')
+,searchController=require('../controller/searchController')
 
 let setRouter = (app) => {
   let baseUrl = `${config.configuration.version}/app`
@@ -35,14 +36,21 @@ app.get(baseUrl+'/filterByStatus/:status',dashboardController.filterRowsByStatus
 app.get(baseUrl+'/filterByDate/:creationDate',dashboardController.filterRowsByDate)
 app.get(baseUrl+'/filterByReporterId/:reporterId',dashboardController.filterRowsByReporterId)
 app.get(baseUrl+'/filterByTitle/:title',dashboardController.filterRowsByTitle)
-  app.post(baseUrl+'/multi',dashboardController.sortCols)
+  app.post(baseUrl+'/sortByColumns',dashboardController.sortCols)
   app.post(baseUrl+'/createIssue',upload.any(),uploadMiddleware.fileUploader,dashboardController.createIssue)
 // issue description routes
-app.post(baseUrl+'/editIssue',upload.any(),uploadMiddleware.fileUploader,issueController.editIssueDetails)
+app.put(baseUrl+'/editIssue',upload.any(),uploadMiddleware.fileUploader,issueController.editIssueDetails)
 app.post(baseUrl+'/comment',issueController.commentOnIssue)
 app.post(baseUrl+'/addAsWatcher',issueController.addWatcher)
 app.get(baseUrl+'/listWatchers/:issueId',issueController.listAllWatcher)
+app.post(baseUrl+'/assignIssue',issueController.assignIssueToOthers)
+
+// search routes
+
+app.get(baseUrl+'/search/:text',searchController.searchIssue)
 }
+
+
 
 module.exports = {
   setRouter: setRouter
