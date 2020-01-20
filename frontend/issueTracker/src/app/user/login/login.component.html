@@ -1,1 +1,45 @@
-<p>login works!</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary mb-4 sticky-top">
+    <a class="navbar-brand">Issue Tracker</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+        <ul class="navbar-nav ">
+            <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/signup']">Signup</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Login Here</h1>
+    <br>
+    <form #logInForm="ngForm" (ngSubmit)="logIn()">
+
+        <div class="form-group">
+            <label for="usernameEmail">Email/Username</label>
+            <input type="email" id="e-mail" class="form-control" name="usernameEmail" placeholder="Enter your username or email id." [(ngModel)]="usernameEmail" autofocus required>
+        </div>
+
+        
+
+        <div class="form-group">
+            <label for="pwd">Password</label>
+            <input type="password" class="form-control" name="pwd" id="pwd" [(ngModel)]="user_password" required>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg btn-block">Log In</button>
+        
+    </form>
+    <br>
+    
+    <br>
+    
+    <div class="row">
+<div class="col-md-6 col-sm-6 col-6 text-right"><i class="fa fa-facebook-official" style="font-size:48px;color:blue"></i></div>
+<div class="col-md-6 col-sm-6 col-6"><i class="fa fa-google" style="font-size:48px;color:blue"></i></div>
+    </div>
+</div>

@@ -66,6 +66,7 @@ let sendNotification = (server) => {
                 else {
                     console.log('user is verified');
                     let currentUser=userData.userId
+                    socket.userId=currentUser
                     socket.emit('online-status',`${currentUser} is online.`)
                     socket.on('issueUpdated', (info) => {
                         console.log('update event listened');
@@ -105,6 +106,11 @@ let sendNotification = (server) => {
             })
         })
 
+
+        socket.on('disconnect', () => {
+            console.log('user is disconnected');
+            console.log(socket.userId);
+        })
 
 
     })
