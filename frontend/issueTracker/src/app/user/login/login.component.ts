@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
             this.hitApis.setLocalStorage(response['data']['userDetails']);
             this.cookie.put('authToken', response['data']['authToken']);
             this.cookie.put('userId', response['data']['userDetails']['userId']);
-            this.cookie.put('userName', `${response['data']['userDetails']['firstName']} ${response['data']['userDetails']['lastName']}`);
+            this.cookie.put('userName', `${response['data']['userDetails']['userName']} `);
             console.log(response['data']);
             this.toastr.success('Login Successfull');
             setTimeout(() => {
@@ -46,8 +46,9 @@ export class LoginComponent implements OnInit {
         },
         error => {
           let message =this.hitApis.handleError(error);
-          if(message == "Http failure response for https://chatapi.edwisor.com/api/v1/users/login: 400 Bad Request")
-          this.toastr.error('Either Email or password is incorrect');
+          this.toastr.error(message)
+          // if(message == "Http failure response for https://chatapi.edwisor.com/api/v1/users/login: 400 Bad Request")
+          // this.toastr.error('Either Email or password is incorrect');
         }
       );
     }

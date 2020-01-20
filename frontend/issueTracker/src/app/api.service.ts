@@ -25,6 +25,8 @@ export class ApiService {
     const bodyParams = new HttpParams()
       .set('usernameEmail', data.usernameEmail)
       .set('password', data.password);
+      console.log(bodyParams);
+      
     let response = this.http.post(`${this.baseUrl}/login`, bodyParams);
     return response;
   }

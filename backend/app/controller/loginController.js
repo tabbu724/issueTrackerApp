@@ -108,7 +108,7 @@ let signup = (req, res) => {
 
 let dashboardInfo = (req, res) => {
     let response = responseLib.formatResponse(false, 'User details found.', 200,
-        req.user.userId )
+        req.user )
     res.send(response)
 }
 
@@ -143,7 +143,7 @@ let login = (req, res) => {
                 if (err) {
                     let errorLog = loggerLib.captureError('Some error occurred in comparing password.', 4, '/loginController/login/verifyPassword')
                     console.log(errorLog);
-                    let response = responseLib.formatResponse(true, 'Some error occurred in comparing password.', 500, null)
+                    let response = responseLib.formatResponse(true, err.message, 500, null)
                     reject(response)
                 }
                 else if (isMatch) {
@@ -179,6 +179,8 @@ let login = (req, res) => {
                     tokenDetails.userDetails = userDetails
                     let infoLog = loggerLib.captureInfo('Auth token generated .', 10, '/loginController/login/generateAuthToken')
                     console.log(infoLog);
+                    console.log(tokenDetails);
+                    
                     resolve(tokenDetails)
                 }
             })
@@ -248,10 +250,10 @@ let login = (req, res) => {
         .then(generateAuthToken)
         .then(createAndSaveAuthModel)
         .then((resolve) => {
-            let user = {
-                userId: resolve.userDetails.userId
-            }
-            req.user = user
+            // let user = {
+            //     userId: resolve.userDetails.userId
+            // }
+            req.user = resolve
             dashboardInfo(req, res)
         })
         .catch((err) => {

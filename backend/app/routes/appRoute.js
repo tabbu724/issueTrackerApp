@@ -11,6 +11,10 @@ const config = require('../../config/appConfig')
 
 let setRouter = (app) => {
   let baseUrl = `${config.configuration.version}/app`
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+  });
   app.post(baseUrl + '/register', controller.signup)
   app.post(baseUrl + '/login', controller.login)
   app.get(baseUrl + '/loginViaGoogle', controller.loginViaGoogle)

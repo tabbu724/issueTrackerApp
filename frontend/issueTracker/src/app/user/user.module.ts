@@ -20,7 +20,8 @@ import { FormsModule } from "@angular/forms";
     CookieModule.forChild(),
     ToastrModule.forRoot(),
     RouterModule.forChild([
-      {path:'signup',component:SignupComponent}
+      {path:'signup',component:SignupComponent},
+      {path:'dashboard',component:DashboardComponent}
     ])
   ]
 })
