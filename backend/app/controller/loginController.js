@@ -108,14 +108,14 @@ let signup = (req, res) => {
 
 let dashboardInfo = (req, res) => {
     let response = responseLib.formatResponse(false, 'User details found.', 200,
-        `Hi ${req.user.userId} this is your dashboard `)
+        req.user.userId )
     res.send(response)
 }
 
 let login = (req, res) => {
     let findUser = () => {
         return new Promise((resolve, reject) => {
-            userModel.findOne({ userName: req.body.username }, (err, userDetails) => {
+            userModel.findOne({ $or:[ {userName: req.body.usernameEmail},{email: req.body.usernameEmail} ]}, (err, userDetails) => {
                 if (err) {
                     let errorLog = loggerLib.captureError('Some error occurred in getting user data.', 4, 'loginController/login/findUser')
                     console.log(errorLog);

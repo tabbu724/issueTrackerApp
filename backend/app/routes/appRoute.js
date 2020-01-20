@@ -17,18 +17,18 @@ let setRouter = (app) => {
   app.get(baseUrl + '/loginViaFacebook', controller.loginViaFacebook)
   app.post(baseUrl + '/logOut/:userId', controller.logout)
   app.get(baseUrl + '/dashboard', controller.dashboardInfo)
-  app.get("/auth/facebook", passport.authenticate("facebook"
+  app.get(baseUrl+"/auth/facebook", passport.authenticate("facebook"
     , { successRedirect: baseUrl + '/loginViaFacebook' }))
-  app.get("/auth/facebook/callback", passport.authenticate("facebook", {
+  app.get(baseUrl+"/auth/facebook/callback", passport.authenticate("facebook", {
     successRedirect: baseUrl + '/dashboard'
   }))
-  app.get('/auth/google',
+  app.get(baseUrl+'/auth/google',
     passport.authenticate('google', {
       scope: ['profile', 'email']
       , successRedirect: baseUrl + '/loginViaGoogle'
     }));
 
-  app.get('/auth/google/callback',
+  app.get(baseUrl+'/auth/google/callback',
     passport.authenticate('google', { successRedirect: baseUrl + '/dashboard' }));
 // dashboard routes
 app.get(baseUrl+'/dashboard/:userId',dashboardController.dashboardInfo)
