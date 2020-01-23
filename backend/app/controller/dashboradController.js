@@ -6,7 +6,7 @@ const issueModel = require('../models/issueDetails')
     ,timeLib=require('../libraries/dateTimeLib')
 
 let dashboardInfo = (req, res) => {
-    issueModel.find({ assigneeId: req.params.userId }, (err, issueDetails) => {
+    issueModel.find({ assigneeName: req.authorisedUser.userName }, (err, issueDetails) => {
         if (err) {
             let response = responseLib.formatResponse(true, 'Error in finding issues assigned to you.', 500, null)
             res.send(response)
@@ -23,7 +23,7 @@ let dashboardInfo = (req, res) => {
 }
 
 let filterRowsByStatus = (req, res) => {
-    issueModel.find({ status: req.params.status }, (err, statusBasedIssueDetails) => {
+    issueModel.find({ status: req.params.status ,assigneeName: req.authorisedUser.userName}, (err, statusBasedIssueDetails) => {
         if (err) {
             let response = responseLib.formatResponse(true, 'Error in finding issues with this status.', 500, null)
             res.send(response)
@@ -40,7 +40,7 @@ let filterRowsByStatus = (req, res) => {
 }
 
 let filterRowsByTitle = (req, res) => {
-    issueModel.find({ title: req.params.title }, (err, titleBasedIssueDetails) => {
+    issueModel.find({ title: req.params.title ,assigneeName: req.authorisedUser.userName}, (err, titleBasedIssueDetails) => {
         if (err) {
             let response = responseLib.formatResponse(true, 'Error in finding issues with this title.', 500, null)
             res.send(response)
@@ -56,53 +56,74 @@ let filterRowsByTitle = (req, res) => {
     })
 }
 
-let filterRowsByReporterId = (req, res) => {
-    issueModel.find({ reporterId: req.params.reporterId }, (err, reporterIdBasedIssueDetails) => {
+let filterRowsByReporter = (req, res) => {
+    issueModel.find({ reporterName: req.params.reporterName ,assigneeName: req.authorisedUser.userName}, (err, reporterBasedIssueDetails) => {
         if (err) {
             let response = responseLib.formatResponse(true, 'Error in finding issues with this reporter id.', 500, null)
             res.send(response)
         }
-        else if (checkLib.isEmpty(reporterIdBasedIssueDetails)) {
+        else if (checkLib.isEmpty(reporterBasedIssueDetails)) {
             let response = responseLib.formatResponse(true, 'No issues exist with this reporter id.', 404, null)
             res.send(response)
         }
         else {
-            let response = responseLib.formatResponse(false, 'Reporter id based issues are found.', 200, reporterIdBasedIssueDetails)
+            let response = responseLib.formatResponse(false, 'Reporter id based issues are found.', 200, reporterBasedIssueDetails)
             res.send(response)
         }
     })
+   
 }
 
 let filterRowsByDate = (req, res) => {
     
-    let formattedDate=timeLib.parseToMyFormat(req.params.creationDate)
-    console.log(formattedDate);
+    // let formattedDate=timeLib.parseToMyFormat(req.params.creationDate)
+    // console.log(formattedDate);
     
-    issueModel.find({creationDateString:formattedDate}
-        , (err, dateBasedIssueDetails) => {
+    // issueModel.find({creationDateString:formattedDate,assigneeId: req.authorisedUser.userId}
+    //     , (err, dateBasedIssueDetails) => {
+    //     if (err) {
+    //         let response = responseLib.formatResponse(true, 'Error in finding issues with this date.', 500, null)
+    //         res.send(response)
+    //     }
+    //     else if (checkLib.isEmpty(dateBasedIssueDetails)) {
+    //         let response = responseLib.formatResponse(true, 'No issues exist with this date.', 404, null)
+    //         res.send(response)
+    //     }
+    //     else {
+    //         let response = responseLib.formatResponse(false, 'Date based issues are found.', 200, dateBasedIssueDetails)
+    //         res.send(response)
+    //     }
+    // })
+    let searchDate = timeLib.parseToMyFormat(req.params.creationDate)
+
+    let searchCriteria = { $text: { $search: searchDate } }
+
+    issueModel.find(searchCriteria, (err, data) => {
         if (err) {
-            let response = responseLib.formatResponse(true, 'Error in finding issues with this date.', 500, null)
-            res.send(response)
+            let response = responseLib.formatResponse(true, err.message, 500, null)
+            res.send(response);
         }
-        else if (checkLib.isEmpty(dateBasedIssueDetails)) {
+        else if (checkLib.isEmpty(data)) {
             let response = responseLib.formatResponse(true, 'No issues exist with this date.', 404, null)
-            res.send(response)
+            res.send(response);
         }
         else {
-            let response = responseLib.formatResponse(false, 'Date based issues are found.', 200, dateBasedIssueDetails)
+
+            let response = responseLib.formatResponse(false, 'Date based issues are found.', 200, data)
             res.send(response)
         }
     })
 }
 
 let sortCols = (req, res) => {
+    // console.log('req.body.title',req.body.title);
     
-    let status = req.body.status.toLowerCase()==='true'?'status':null
-        , createdOn = req.body.createdOn.toLowerCase()==='true'?'createdOn':null
-        , reporterId = req.body.reporterId.toLowerCase()==='true'?'reporterId':null
-        , title = req.body.title.toLowerCase()==='true'?'title':null
+    let status = req.body.status==='true'?'status':null
+        , creationDate = req.body.creationDate==='true'?'createdOn':null
+        , reporterName = req.body.reporterName==='true'?'reporterId':null
+        , title = req.body.title==='true'?'title':null
         
-    issueModel.find({}, (err, sortResult) => {
+    issueModel.find({assigneeName: req.authorisedUser.userName}, (err, sortResult) => {
         if (err) {
             let response = responseLib.formatResponse(true, 'Error in sorting rows.', 500, null)
             res.send(response);
@@ -116,7 +137,7 @@ let sortCols = (req, res) => {
             res.send(response)
         }
     })
-    .sort(`${status} ${createdOn} ${reporterId} ${title}`)
+    .sort(`${status} ${creationDate} ${reporterName} ${title}`)
 }
 
 let createIssue = (req, res) => {
@@ -125,39 +146,29 @@ let createIssue = (req, res) => {
                     res.send(response);
     }
     else{
-        userModel.findOne({ userName: req.body.username }, (err, userData) => {
+        // console.log('reporter',req.authorisedUser.userName);
+        
+        let newIssue = new issueModel({
+            issueId: shortid.generate(),
+            status: req.body.status,
+            title: req.body.title,
+            reporterName: req.authorisedUser.userName,
+            assigneeName: req.body.assigneeName,
+            attachmentUrls: req.attachments,
+            description:req.body.description
+        })
+        newIssue.save((err, newIssueData) => {
             if (err) {
-                console.log(err);
+                let response = responseLib.formatResponse(true, 'Error in creating new issue.', 500, null)
+                res.send(response);
+    
             }
-            else {  
-                // console.log(userData);
-                        
-                let assigneeId = userData.userId
-                
-                // console.log('assigneeId',assigneeId);
-                let newIssue = new issueModel({
-                    issueId: shortid.generate(),
-                    status: req.body.status,
-                    title: req.body.title,
-                    reporterId: req.body.userId,
-                    assigneeId: assigneeId,
-                    attachmentUrls: req.attachments,
-                    description:req.body.description
-                })
-                newIssue.save((err, newIssueData) => {
-                    if (err) {
-                        let response = responseLib.formatResponse(true, 'Error in creating new issue.', 500, null)
-                        res.send(response);
-            
-                    }
-                    else {
-                        let newIssueDataObject = newIssueData.toObject()
-                        delete newIssueDataObject._id
-                        delete newIssueDataObject.__v
-                        let response = responseLib.formatResponse(false, 'New issue has been created.', 200, newIssueDataObject)
-                        res.send(response);
-                    }
-                })
+            else {
+                let newIssueDataObject = newIssueData.toObject()
+                delete newIssueDataObject._id
+                delete newIssueDataObject.__v
+                let response = responseLib.formatResponse(false, 'New issue has been created.', 200, newIssueDataObject)
+                res.send(response);
             }
         })
     }
@@ -165,30 +176,14 @@ let createIssue = (req, res) => {
   
 }
 
-let issueDescriptionViewInfo=(req,res)=>{
-    issueModel.findOne({issueId:req.params.issueId},(err,issueInfo)=>{
-        if(err){
-            let response = responseLib.formatResponse(true, 'Error in finding requested issue details.', 500, null)
-            res.send(response);
-        }
-        else if(checkLib.isEmpty(issueInfo)){
-            let response = responseLib.formatResponse(true, 'No such issue exists .', 404, null)
-            res.send(response)
-        }
-        else{
-            let response = responseLib.formatResponse(false, 'Requested issue details have been found.', 200, issueInfo)
-                res.send(response);
-        }
-    })
-}
+
 
 module.exports = {
     dashboardInfo: dashboardInfo,
     filterRowsByStatus: filterRowsByStatus,
     filterRowsByTitle: filterRowsByTitle,
-    filterRowsByReporterId: filterRowsByReporterId,
+    filterRowsByReporter: filterRowsByReporter,
     filterRowsByDate: filterRowsByDate,
     sortCols: sortCols,
-    createIssue: createIssue,
-    issueDescriptionViewInfo:issueDescriptionViewInfo
+    createIssue: createIssue
 }

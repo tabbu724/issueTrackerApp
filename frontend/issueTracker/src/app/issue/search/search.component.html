@@ -1,1 +1,52 @@
-<p>search works!</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary mb-4 sticky-top">
+    <a class="navbar-brand">Issue Tracker</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+        <ul class="navbar-nav ">
+            <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/login']">LogOut</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container " *ngIf="searchInfo">
+    <h1>Here are your search results.</h1>
+    <br> <br>
+    
+
+    <div class="table-responsive">
+        <table class="table table-hover ">
+            <thead>
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Status</th>
+                
+                <th scope="col">Reporter</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+                
+              <tr *ngFor="let issue of searchInfo">
+                  <!-- {{issue.issueId}} -->
+                <th scope="row">{{issue.title}}</th>
+                <td>{{issue.status}}</td>
+                <td>{{issue.reporterName}}</td>
+                <td>{{issue.creationDateString}}</td>
+              </tr>
+    
+            </tbody>
+          </table>
+    </div>
+    
+</div>
+
+<div *ngIf=!searchInfo class="container ">
+  <h1>Oops! No search results available.</h1>  
+</div>
+

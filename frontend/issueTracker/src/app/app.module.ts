@@ -12,11 +12,13 @@ import { LoginComponent } from './user/login/login.component';
 import { UserModule } from './user/user.module';
 import { SharedModule } from './shared/shared.module';
 import { IssueModule } from './issue/issue.module';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
@@ -27,7 +29,7 @@ import { IssueModule } from './issue/issue.module';
     RouterModule.forRoot(
      [
       {path:'login',component:LoginComponent},
-      {path:'**',component:LoginComponent},
+      {path:'**',component:NotFoundComponent},
       {path:'',redirectTo:'login',pathMatch:'full'}
      ]
     ),

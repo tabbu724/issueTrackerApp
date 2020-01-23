@@ -6,9 +6,26 @@ const issueModel = require('../models/issueDetails')
     , timeLib = require('../libraries/dateTimeLib')
     , redisLib = require('../libraries/redisLib')
     , socketLib = require('../libraries/socketLib')
-,serverInstance=require('../../index')
-,event=require('events')
-,eventEmitter=new event.EventEmitter()
+    , serverInstance = require('../../index')
+    , event = require('events')
+    , eventEmitter = new event.EventEmitter()
+
+let issueDescriptionViewInfo = (req, res) => {
+    issueModel.findOne({ issueId: req.params.issueId }, (err, issueInfo) => {
+        if (err) {
+            let response = responseLib.formatResponse(true, 'Error in finding requested issue details.', 500, null)
+            res.send(response);
+        }
+        else if (checkLib.isEmpty(issueInfo)) {
+            let response = responseLib.formatResponse(true, 'No such issue exists .', 404, null)
+            res.send(response)
+        }
+        else {
+            let response = responseLib.formatResponse(false, 'Requested issue details have been found.', 200, issueInfo)
+            res.send(response);
+        }
+    })
+}
 
 
 let editIssueDetails = (req, res) => {
@@ -31,9 +48,9 @@ let editIssueDetails = (req, res) => {
                 description: 0,
                 status: 0
             }
-// console.log(req.attachments);
+            // console.log(req.attachments);
 
-            if (req.attachments.length!= 0) {
+            if (req.attachments.length != 0) {
                 req.attachments.forEach(fileObject => {
                     issueDetails.attachmentUrls.push(fileObject)
                 });
@@ -58,15 +75,15 @@ let editIssueDetails = (req, res) => {
                     res.send(response)
                 }
                 else {
-                    let updatedWithFlags=updatedDetails.toObject()
+                    let updatedWithFlags = updatedDetails.toObject()
                     // console.log(updatedWithFlags);
-                    
-                    updatedWithFlags.flags=flags
+
+                    updatedWithFlags.flags = flags
                     let response = responseLib.formatResponse(false, 'Issue details updated successfully.', 200, updatedWithFlags)
 
-                    
-                   
-                   
+
+
+
                     res.send(response)
                 }
             })
@@ -76,12 +93,12 @@ let editIssueDetails = (req, res) => {
 }
 
 let assignIssueToOthers = (req, res) => {
-    userModel.findOne({ userName: req.body.username }, (err, userData) => {
+    userModel.findOne({ userName: req.body.assigneeUsername }, (err, userData) => {
         if (err) {
             console.log(err);
         }
         else if (checkLib.isEmpty(userData)) {
-            let response = responseLib.formatResponse(true, 'No such user exists', 404, null)
+            let response = responseLib.formatResponse(true, 'Issue cannot be assigned to this assignee as no such user exists', 404, null)
             res.send(response)
         }
         else {
@@ -98,7 +115,7 @@ let assignIssueToOthers = (req, res) => {
                     res.send(response);
                 }
                 else {
-                    updatedDetails.notifyMsg=`Issue with id : ${req.body.issueId} has been assigned to ${req.body.username}.`
+                    updatedDetails.notifyMsg = `Issue with id : ${req.body.issueId} has been assigned to ${req.body.username}.`
                     let response = responseLib.formatResponse(false, 'Assignee updated successfully.', 200, updatedDetails)
                     res.send(response)
                 }
@@ -138,9 +155,9 @@ let commentOnIssue = (req, res) => {
 
                     // console.log('created commentInfo-> ',JSON.parse(commentData[commentId]));
 
-                    let commentObject=JSON.parse(commentData[commentId])
-                    
-                    commentObject['notifyMsg']=`${req.body.username} commented on issue with id : ${req.body.issueId} .`
+                    let commentObject = JSON.parse(commentData[commentId])
+
+                    commentObject['notifyMsg'] = `${req.body.username} commented on issue with id : ${req.body.issueId} .`
                     let response = responseLib.formatResponse(false, 'comment created successfully.', 200, commentObject)
                     res.send(response)
                 }
@@ -163,9 +180,9 @@ let addWatcher = (req, res) => {
         }
         else {
             console.log(typeof additionStatus);
-            let details={
-                additionStatus:additionStatus,
-                notifyMsg:`${req.body.userName} is a watcher to issue with issue id :${req.body.issueId}. `
+            let details = {
+                additionStatus: additionStatus,
+                notifyMsg: `${req.body.userName} is a watcher to issue with issue id :${req.body.issueId}. `
             }
             let response = responseLib.formatResponse(false, 'You are added as a watcher successfully.', 200, details)
             res.send(response)
@@ -192,6 +209,7 @@ let listAllWatcher = (req, res) => {
 }
 
 module.exports = {
+    issueDescriptionViewInfo: issueDescriptionViewInfo,
     editIssueDetails: editIssueDetails,
     assignIssueToOthers: assignIssueToOthers,
     commentOnIssue: commentOnIssue,

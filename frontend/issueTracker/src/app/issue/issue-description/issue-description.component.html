@@ -1,1 +1,73 @@
-<p>issue-description works!</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary mb-4 sticky-top">
+    <a class="navbar-brand">Issue Tracker</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+        <ul class="navbar-nav ">
+            
+            <li class="nav-item">
+                <a class="nav-link" [routerLink]="['/login']" (click)="logout()">LogOut</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container ">
+    <h1>These are the issue details you needed.</h1>
+    <br><br>
+    <div class="card text-center">
+        <div class="card-header">
+          <ul class="nav nav-pills card-header-pills">
+            <li class="nav-item">
+              <a class="nav-link active" >Current issue details</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" (click)="setEditFlag()">Edit Issue Details</a>
+              </li>
+              
+          </ul>
+        </div>  
+        <div class="card-body" *ngIf="currentDetails==true && editflag==false">
+          <h5 class="card-title">{{issueInfo.title}}</h5>
+          <p class="card-text">description: {{issueInfo.description}}</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">status : {{issueInfo.status}}</li>
+            <li class="list-group-item">reporter : {{issueInfo.reporterName}}</li>
+            <li class="list-group-item">assignee : {{issueInfo.assigneeName}}</li>
+          </ul>
+          <p class="card-text">Attachments:</p>
+          <p class="card-text" *ngFor="let url of issueInfo.attachmentUrls">{{url}}</p>
+          <div class="card-footer text-muted">
+            Created On : {{issueInfo.creationDateString}}
+          </div>
+        </div>
+
+        <div class="card-body" *ngIf="currentDetails==true && editflag==true">
+            <div class="form-group">
+                <label for="title">title</label>
+                <input type="email" id="title" class="form-control" name="title" [(ngModel)]="title" >
+            </div>
+            <div class="form-group">
+                <label for="tidescriptiontle">description</label>
+                <input type="email" id="description" class="form-control" name="description" [(ngModel)]="description" >
+            </div>
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="inputGroupFile02" [(ngModel)]="file">
+                  <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Choose file</label>
+                </div>
+                <div class="input-group-append">
+                  <span class="input-group-text" id="inputGroupFileAddon02" (click)="edit() ">Upload</span>
+                </div>
+              </div>
+            
+          </div>
+      </div>
+<br><br>
+    
+    
+</div>
+

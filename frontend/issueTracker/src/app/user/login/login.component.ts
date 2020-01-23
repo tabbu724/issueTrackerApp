@@ -41,11 +41,11 @@ export class LoginComponent implements OnInit {
             }, 2000);
           }
           else {
-            this.toastr.error('Response status is not 200', response['message']);
+            this.toastr.error( response['message']);
           }
         },
         error => {
-          let message =this.hitApis.handleError(error);
+          let message = this.hitApis.handleError(error);
           this.toastr.error(message)
           // if(message == "Http failure response for https://chatapi.edwisor.com/api/v1/users/login: 400 Bad Request")
           // this.toastr.error('Either Email or password is incorrect');
@@ -53,6 +53,30 @@ export class LoginComponent implements OnInit {
       );
     }
 
+  }
+
+  public loginViaFb = () => {
+    this.hitApis.userLoginFb().subscribe(
+      response => {
+        if (response['status'] == 200) {
+          console.log(response);
+
+          this.hitApis.setLocalStorage(response['data'])
+          this.toastr.success('Login Successfull')
+          setTimeout(() => {
+            this._router.navigate(['/dashboard']);
+          }, 2000);
+        }
+        else {
+          this.toastr.error(response['message']);
+
+        }
+
+      },
+      error => {
+        this.toastr.error('Error occurred.', error)
+      }
+    )
   }
 
   ngOnInit() {

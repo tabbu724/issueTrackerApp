@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/api.service';
+import { Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie';
+import { ToastrService } from "ngx-toastr";
 
 @Component({
   selector: 'app-signup',
@@ -7,7 +11,52 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SignupComponent implements OnInit {
 
-  constructor() { }
+  public username;
+  public email;
+  public password;
+  constructor(private hitApis: ApiService, private toastr: ToastrService, private _router: Router, private cookie: CookieService) { }
+
+  public signIn = () => {
+    let credentials = {
+      "username": this.username,
+      "email":this.email,
+      "password": this.password,
+
+    };
+    if (!this.username) {
+      return this.toastr.warning('Username is missing')
+    }
+    else if (!this.email){
+      return this.toastr.warning('Email id is missing')
+    }
+    else if (!this.password) {
+      return this.toastr.warning('Password missing');
+    }
+    else {
+      this.hitApis.userSignup(credentials).subscribe(
+        response => {
+          if (response['status'] == 200) {
+            this.hitApis.setLocalStorage(response['data']['userDetails']);
+            console.log(response['data']);
+            this.toastr.success('You have successfully signed in.');
+            setTimeout(() => {
+              this._router.navigate(['/dashboard']);
+            }, 2000);
+          }
+          else {
+            this.toastr.error( response['message']);
+          }
+        },
+        error => {
+          let message = this.hitApis.handleError(error);
+          this.toastr.error(message)
+          // if(message == "Http failure response for https://chatapi.edwisor.com/api/v1/users/login: 400 Bad Request")
+          // this.toastr.error('Either Email or password is incorrect');
+        }
+      );
+    }
+
+  }
 
   ngOnInit() {
   }

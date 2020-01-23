@@ -15,7 +15,7 @@ const express = require('express')
     , loginController = require('./app/controller/loginController')
 ,path=require('path')
 
-
+,cors=require('cors')
 // creating object of the module class
 
 const app = express()
@@ -24,6 +24,7 @@ const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
+app.use(cors())
 
 
 // required to configure passport for social logins
@@ -35,8 +36,8 @@ app.use(expressSession({
 }))
 
 
-loginController.loginViaFacebook(passport)
-loginController.loginViaGoogle(passport)
+// route.passportFbStrategy(passport)
+// loginController.loginViaGoogle(passport)
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -56,6 +57,8 @@ fs.readdirSync(dirPath).forEach((file) => {
     if (~file.indexOf('.js')) {
         let route = require(`${dirPath}/${file}`)
         route.setRouter(app)
+        route.passportFbStrategy(passport)
+        route.passportGoogleStrategy(passport)
     }
 })
 // searching the each file of directory to import models

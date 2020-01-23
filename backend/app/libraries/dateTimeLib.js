@@ -9,7 +9,7 @@ let now = () => {
 }
 
 let formatCurrentDate=()=>{
-    return moment().format('YYYY-MM-DD')
+    return moment().format('llll')
 }
 
 let parseToMyFormat=(dateString)=>{

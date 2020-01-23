@@ -1,10 +1,10 @@
 const aws = require('aws-sdk')
     , config = require('../../config/appConfig')
-
+,encryptLib=require('../libraries/encryptLib')
 let fileUploader = (req, res, next) => {
     let s3Bucket = new aws.S3({
-        accessKeyId: config.configuration.AWS_ACCESS_KEY_ID,
-        secretAccessKey: config.configuration.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: encryptLib.decodeData(config.configuration.AWS_ACCESS_KEY_ID),
+        secretAccessKey: encryptLib.decodeData(config.configuration.AWS_SECRET_ACCESS_KEY),
         region: config.configuration.AWS_REGION
     })
 
@@ -36,7 +36,7 @@ let dataObject={
         for (file of fileArray) {
 
             let fileParams = {
-                Bucket: config.configuration.AWS_BUCKET_NAME + config.configuration.AWS_FOLDER_NAME,
+                Bucket: encryptLib.decodeData(config.configuration.AWS_BUCKET_NAME) + config.configuration.AWS_FOLDER_NAME,
                 Key: file.originalname,
                 Body: file.buffer,
                 ContentType: file.mimetype,

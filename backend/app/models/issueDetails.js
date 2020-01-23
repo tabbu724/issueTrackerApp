@@ -16,10 +16,10 @@ let issueDetailsSchema = new schema({
     description:{
         type:String
     },
-    reporterId: {
+    reporterName: {
         type: String
     },
-    assigneeId: {
+    assigneeName: {
         type: String
     },
     creationDate: {
@@ -28,7 +28,7 @@ let issueDetailsSchema = new schema({
     },
     creationDateString: {
         type: String,
-        default:timeLib.formatCurrentDate()
+        default:timeLib.formatCurrentDate()//display only
     },
     attachmentUrls: [
         {

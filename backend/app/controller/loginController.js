@@ -7,11 +7,9 @@ const userModel = require('../models/user')
     , passwordLib = require('../libraries/passwordLib')
     , tokenLib = require('../libraries/tokenLib')
     , authLib = require('../libraries/authLib')
-    , fbStrategy = require('passport-facebook').Strategy
     , appConfig = require('../../config/appConfig')
-    , passportSession = require('../libraries/socialLoginLib')
-    , googleStrategy = require('passport-google-oauth20').Strategy
     , loggerLib = require('../libraries/loggerLib')
+    ,encryptLib=require('../libraries/encryptLib')
 
 let signup = (req, res) => {
     let validateInputs = () => {
@@ -94,22 +92,14 @@ let signup = (req, res) => {
     validateInputs(req, res)
         .then(createUser)
         .then((resolve) => {
-            let user = {
-                userId: resolve.userId
-            }
-            req.user = user
-            dashboardInfo(req, res)
+            let response = responseLib.formatResponse(false, 'A new user has been created successfully', 200, resolve)
+            res.send(response)
         })
         .catch((err) => {
+            let response = responseLib.formatResponse(true, err.message,500,null)
             res.send(err)
         })
 
-}
-
-let dashboardInfo = (req, res) => {
-    let response = responseLib.formatResponse(false, 'User details found.', 200,
-        req.user )
-    res.send(response)
 }
 
 let login = (req, res) => {
@@ -187,260 +177,88 @@ let login = (req, res) => {
         })
     }
 
-    let createAndSaveAuthModel = (tokenDetails) => {
-        return new Promise((resolve, reject) => {
-            authModel.findOne({ userId: tokenDetails.userDetails.userId }, (err, authDetails) => {
-                if (err) {
-                    let errorLog = loggerLib.captureError('Error occurred in token generation.', 4, '/loginController/login/createAndSaveAuthModel')
-                    console.log(errorLog);
-                    let response = responseLib.formatResponse(true, 'Error occurred in fetching authorisation details.', 500, null)
-                    reject(response)
-                }
-                else if (checkLib.isEmpty(authDetails)) {
-                    let authDoc = new authModel({
-                        userId: tokenDetails.userDetails.userId,
-                        token: tokenDetails.token,
-                        secretKey: tokenDetails.secretKey
-                    })
-                    authDoc.save((err, newAuthData) => {
-                        if (err) {
-                            let errorLog = loggerLib.captureError('Error occurred in saving authorisation details.', 4, '/loginController/login/createAndSaveAuthModel')
-                            console.log(errorLog);
-                            let response = responseLib.formatResponse(true, 'Error occurred in saving authorisation details.', 500, null)
-                            reject(response)
-                        }
-                        else {
-                            let responseBody = {
-                                authToken: newAuthData.token,
-                                userDetails: tokenDetails.userDetails
-                            }
-                            let infoLog = loggerLib.captureInfo('Auth model created .', 10, '/loginController/login/createAndSaveAuthModel')
-                            console.log(infoLog);
-                            resolve(responseBody)
-                        }
-                    })
-                }
-                else {
-                    authDetails.token = tokenDetails.token
-                    authDetails.secretKey = tokenDetails.secretKey
-                    authDetails.save((err, updatedAuthData) => {
-                        if (err) {
-                            let errorLog = loggerLib.captureError('Error occurred in updating authorisation details.', 4, '/loginController/login/createAndSaveAuthModel')
-                            console.log(errorLog);
-                            let response = responseLib.formatResponse(true, 'Error occurred in updating authorisation details.', 500, null)
-                            reject(response)
-                        }
-                        else {
-                            let responseBody = {
-                                authToken: updatedAuthData.token,
-                                userDetails: tokenDetails.userDetails
-                            }
-                            let infoLog = loggerLib.captureInfo('Auth model updated .', 10, '/loginController/login/createAndSaveAuthModel')
-                            console.log(infoLog);
-                            resolve(responseBody)
-                        }
-                    })
-                }
-            })
-        })
-    }
+    // let createAndSaveAuthModel = (tokenDetails) => {
+    //     return new Promise((resolve, reject) => {
+    //         authModel.findOne({ userId: tokenDetails.userDetails.userId }, (err, authDetails) => {
+    //             if (err) {
+    //                 let errorLog = loggerLib.captureError('Error occurred in token generation.', 4, '/loginController/login/createAndSaveAuthModel')
+    //                 console.log(errorLog);
+    //                 let response = responseLib.formatResponse(true, 'Error occurred in fetching authorisation details.', 500, null)
+    //                 reject(response)
+    //             }
+    //             else if (checkLib.isEmpty(authDetails)) {
+    //                 let authDoc = new authModel({
+    //                     userId: tokenDetails.userDetails.userId,
+    //                     token: tokenDetails.token,
+    //                     secretKey: tokenDetails.secretKey
+    //                 })
+    //                 authDoc.save((err, newAuthData) => {
+    //                     if (err) {
+    //                         let errorLog = loggerLib.captureError('Error occurred in saving authorisation details.', 4, '/loginController/login/createAndSaveAuthModel')
+    //                         console.log(errorLog);
+    //                         let response = responseLib.formatResponse(true, 'Error occurred in saving authorisation details.', 500, null)
+    //                         reject(response)
+    //                     }
+    //                     else {
+    //                         let responseBody = {
+    //                             authToken: newAuthData.token,
+    //                             userDetails: tokenDetails.userDetails
+    //                         }
+    //                         let infoLog = loggerLib.captureInfo('Auth model created .', 10, '/loginController/login/createAndSaveAuthModel')
+    //                         console.log(infoLog);
+    //                         resolve(responseBody)
+    //                     }
+    //                 })
+    //             }
+    //             else {
+    //                 authDetails.token = tokenDetails.token
+    //                 authDetails.secretKey = tokenDetails.secretKey
+    //                 authDetails.save((err, updatedAuthData) => {
+    //                     if (err) {
+    //                         let errorLog = loggerLib.captureError('Error occurred in updating authorisation details.', 4, '/loginController/login/createAndSaveAuthModel')
+    //                         console.log(errorLog);
+    //                         let response = responseLib.formatResponse(true, 'Error occurred in updating authorisation details.', 500, null)
+    //                         reject(response)
+    //                     }
+    //                     else {
+    //                         let responseBody = {
+    //                             authToken: updatedAuthData.token,
+    //                             userDetails: tokenDetails.userDetails
+    //                         }
+    //                         let infoLog = loggerLib.captureInfo('Auth model updated .', 10, '/loginController/login/createAndSaveAuthModel')
+    //                         console.log(infoLog);
+    //                         resolve(responseBody)
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //     })
+    // }
 
     findUser(req, res)
         .then(verifyPassword)
         .then(generateAuthToken)
-        .then(createAndSaveAuthModel)
+        .then(authLib.createAndSaveAuthModel)
         .then((resolve) => {
-            // let user = {
-            //     userId: resolve.userDetails.userId
-            // }
-            req.user = resolve
-            dashboardInfo(req, res)
+            let response = responseLib.formatResponse(false, 'A new user has been created successfully', 200, resolve)
+            res.send(response)
         })
         .catch((err) => {
+            let response = responseLib.formatResponse(true, err.message,500,null)
             res.send(err)
         })
 
 }
 
 
-let loginViaFacebook = (passport) => {
+let socialLogin = (req,res) => {
 
-    passportSession.persistentLogin(passport)
-    passport.use(new fbStrategy({
-        clientID: appConfig.configuration.FACEBOOK_APP_ID,
-        clientSecret: appConfig.configuration.FACEBOOK_APP_SECRET,
-        callbackURL: "http://localhost:3000/auth/facebook/callback",
-        profileFields: ['id', 'displayName', 'email']
-    }, function (accessToken, refreshToken, profile, cb) {
-
-        userModel.findOne({ userId: profile.id }, (err, userDetails) => {
-            if (err) {
-                let errorLog = loggerLib.captureError('Error occurred fetching user details.', 4, '/loginController/loginViaFacebook')
-                console.log(errorLog);
-                let response = responseLib.formatResponse(true, 'Error occurred fetching user details.', 500, null)
-                cb(response, null)
-            }
-            else if (checkLib.isEmpty(userDetails)) {
-                let fbUser = new userModel({
-                    userId: profile.id,
-                    userName: profile.displayName.split(' ')[0] + '@' + shortId.generate().substring(0, 3),
-                    password: null,
-                    email: profile.emails[0].value || null
-                })
-
-
-                fbUser.save((err, newFbUser) => {
-                    if (err) {
-                        let errorLog = loggerLib.captureError('Error in creating new user.', 4, '/loginController/loginViaFacebook')
-                        console.log(errorLog);
-                        let response = responseLib.formatResponse(true, 'Error in creating new user.', 500, null)
-                        cb(response, null)
-                    }
-                    else {
-                        // let response = responseLib.formatResponse(false, 'New user created successfully.', 200, newFbUser)
-                        fbUserDetails = newFbUser.toObject()
-                        delete fbUserDetails.__v
-                        delete fbUserDetails._id
-                        delete fbUserDetails.password
-                        delete fbUserDetails.createdOn
-                        delete fbUserDetails.modifiedOn
-                        authLib.generateAuthToken(fbUserDetails)
-                            .then(authLib.createAndSaveAuthModel)
-                            .then((resolve) => {
-                                let infoLog = loggerLib.captureInfo('New user created.', 10, '/loginController/login/loginViaFacebook')
-                                console.log(infoLog);
-                                console.log(resolve);
-
-                            })
-                            .catch((err) => {
-                                console.log(err);
-
-                            })
-                        cb(null, profile)
-                    }
-                })
-            }
-            else {
-                // let response = responseLib.formatResponse(false, 'User details found.', 200, userDetails)
-                existingFbUserDetails = userDetails.toObject()
-                delete existingFbUserDetails.__v
-                delete existingFbUserDetails._id
-                delete existingFbUserDetails.password
-                delete existingFbUserDetails.createdOn
-                delete existingFbUserDetails.modifiedOn
-                authLib.generateAuthToken(existingFbUserDetails)
-                    .then(authLib.createAndSaveAuthModel)
-                    .then((resolve) => {
-                        let infoLog = loggerLib.captureInfo('Existing user updated.', 10, '/loginController/login/loginViaFacebook')
-                        console.log(infoLog);
-                        console.log(resolve);
-
-                    })
-                    .catch((err) => {
-                        console.log(err);
-
-                    })
-                cb(null, profile)
-            }
-        })
-
-    }))
-}
-
-let fblogin = (req, res) => {
-
-    let userDetails = req.user
-    console.log('req.user=>', req.user);
-
-    let response = responseLib.formatResponse(false, 'User details found.', 200, userDetails)
-    res.send(response)
-}
-
-let loginViaGoogle = (passport) => {
-    passport.use(new googleStrategy({
-        clientID: appConfig.configuration.GOOGLE_CLIENT_ID,
-        clientSecret: appConfig.configuration.GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/auth/google/callback"
-    },
-        function (accessToken, refreshToken, profile, cb) {
-            console.log('profile', profile);
-
-            userModel.findOne({ userId: profile.id }, (err, userDetails) => {
-                if (err) {
-                    let errorLog = loggerLib.captureError('Error occurred fetching user details.', 4, '/loginController/loginViaGoogle')
-                    console.log(errorLog);
-                    let response = responseLib.formatResponse(true, 'Error occurred fetching user details.', 500, null)
-                    cb(response, null)
-                }
-                else if (checkLib.isEmpty(userDetails)) {
-                    let fbUser = new userModel({
-                        userId: profile.id,
-                        userName: profile.displayName.split(' ')[0] + '@' + shortId.generate().substring(0, 3),
-                        password: null,
-                        email: profile.emails[0].value || null
-                    })
-
-
-                    fbUser.save((err, newFbUser) => {
-                        if (err) {
-                            let errorLog = loggerLib.captureError('Error in creating new user.', 4, '/loginController/loginViaGoogle')
-                            console.log(errorLog);
-                            let response = responseLib.formatResponse(true, 'Error in creating new user.', 500, null)
-                            cb(response, null)
-                        }
-                        else {
-                            // let response = responseLib.formatResponse(false, 'New user created successfully.', 200, newFbUser)
-                            fbUserDetails = newFbUser.toObject()
-                            delete fbUserDetails.__v
-                            delete fbUserDetails._id
-                            delete fbUserDetails.password
-                            delete fbUserDetails.createdOn
-                            delete fbUserDetails.modifiedOn
-                            authLib.generateAuthToken(fbUserDetails)
-                                .then(authLib.createAndSaveAuthModel)
-                                .then((resolve) => {
-                                    let infoLog = loggerLib.captureInfo('New user created.', 10, '/loginController/login/loginViaGoogle')
-                                    console.log(infoLog);
-                                    console.log(resolve);
-
-                                })
-                                .catch((err) => {
-                                    console.log(err);
-
-                                })
-                            cb(null, profile)
-                        }
-                    })
-                }
-                else {
-                    // let response = responseLib.formatResponse(false, 'User details found.', 200, userDetails)
-                    existingFbUserDetails = userDetails.toObject()
-                    delete existingFbUserDetails.__v
-                    delete existingFbUserDetails._id
-                    delete existingFbUserDetails.password
-                    delete existingFbUserDetails.createdOn
-                    delete existingFbUserDetails.modifiedOn
-                    authLib.generateAuthToken(existingFbUserDetails)
-                        .then(authLib.createAndSaveAuthModel)
-                        .then((resolve) => {
-                            let infoLog = loggerLib.captureInfo('Existing user updated.', 10, '/loginController/login/loginViaGoogle')
-                            console.log(infoLog);
-                            console.log(resolve);
-
-                        })
-                        .catch((err) => {
-                            console.log(err);
-
-                        })
-                    cb(null, profile)
-                }
-            })
-        }
-    ));
+let response=responseLib.formatResponse(false, 'Successfully logged in', 200, req.user)
+res.send(response)
 }
 
 let logout = (req, res) => {
-    authModel.deleteOne({ userId: req.params.userId }, (err, result) => {
+    authModel.deleteOne({ userId: req.authorisedUser.userId }, (err, result) => {
 
         if (err) {
             let errorLog = loggerLib.captureError('error occurred' + err.message, 4, '/loginController/logout')
@@ -466,9 +284,6 @@ let logout = (req, res) => {
 module.exports = {
     signup: signup,
     login: login,
-    dashboardInfo: dashboardInfo,
-    loginViaFacebook: loginViaFacebook,
-    loginViaGoogle: loginViaGoogle,
-    logout: logout,
-    fblogin: fblogin
+    socialLogin:socialLogin,
+    logout: logout
 }

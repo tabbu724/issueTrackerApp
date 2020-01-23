@@ -28,6 +28,14 @@ export class SocketService {
     });//end observable
   }//end verifyUser
 
+  public receiveError=()=>{
+    return Observable.create((observer) => {
+      this.socket.on('auth-err', (err) => {
+        observer.next(err);
+      });//end socket
+    });//end observable
+  }//end verifyUser
+  
   public makeUserOnline = () => {
     return Observable.create((observer) => {
       this.socket.on('online-status', (msg) => {
@@ -66,20 +74,9 @@ export class SocketService {
     this.socket.disconnect();
   }
 
-// api requests
-
-public getPrevChat=(senderId,receiverId,skip)=>{
-  return this.http.get(`${this.url}/api/v1/chat/get/for/user`,
-  {params:{senderId:senderId,receiverId:receiverId,skip:skip,authToken:this.cookie.get('authToken')}}
-  )
-
-}
-
-
-
-public logout=()=>{
-  return this.http.post(`${this.url}/api/v1/users/logout?authToken=${this.authToken}`,this.userId);
-}
+// public logout=()=>{
+//   return this.http.post(`${this.url}/api/v1/users/logout?authToken=${this.authToken}`,this.userId);
+// }
 
   //error handler
 
