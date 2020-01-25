@@ -3,6 +3,7 @@ const issueModel = require('../models/issueDetails')
     , checkLib = require('../libraries/checkLib')
     , shortid = require('shortid')
     ,userModel = require('../models/user')
+    ,validateLib=require('../libraries/validateLib')
     ,timeLib=require('../libraries/dateTimeLib')
 
 let dashboardInfo = (req, res) => {
@@ -76,43 +77,34 @@ let filterRowsByReporter = (req, res) => {
 
 let filterRowsByDate = (req, res) => {
     
-    // let formattedDate=timeLib.parseToMyFormat(req.params.creationDate)
-    // console.log(formattedDate);
     
-    // issueModel.find({creationDateString:formattedDate,assigneeId: req.authorisedUser.userId}
-    //     , (err, dateBasedIssueDetails) => {
-    //     if (err) {
-    //         let response = responseLib.formatResponse(true, 'Error in finding issues with this date.', 500, null)
-    //         res.send(response)
-    //     }
-    //     else if (checkLib.isEmpty(dateBasedIssueDetails)) {
-    //         let response = responseLib.formatResponse(true, 'No issues exist with this date.', 404, null)
-    //         res.send(response)
-    //     }
-    //     else {
-    //         let response = responseLib.formatResponse(false, 'Date based issues are found.', 200, dateBasedIssueDetails)
-    //         res.send(response)
-    //     }
-    // })
-    let searchDate = timeLib.parseToMyFormat(req.params.creationDate)
-
-    let searchCriteria = { $text: { $search: searchDate } }
-
-    issueModel.find(searchCriteria, (err, data) => {
-        if (err) {
-            let response = responseLib.formatResponse(true, err.message, 500, null)
-            res.send(response);
-        }
-        else if (checkLib.isEmpty(data)) {
-            let response = responseLib.formatResponse(true, 'No issues exist with this date.', 404, null)
-            res.send(response);
-        }
-        else {
-
-            let response = responseLib.formatResponse(false, 'Date based issues are found.', 200, data)
-            res.send(response)
-        }
-    })
+    
+    let dateToSearch=req.params.creationDate
+   
+    
+    if(validateLib.validateDateFormat(dateToSearch)){
+        issueModel.find({creationDateString:dateToSearch,assigneeName: req.authorisedUser.userName}
+            , (err, dateBasedIssueDetails) => {
+            if (err) {
+                let response = responseLib.formatResponse(true, 'Error in finding issues with this date.', 500, null)
+                res.send(response)
+            }
+            else if (checkLib.isEmpty(dateBasedIssueDetails)) {
+                let response = responseLib.formatResponse(true, 'No issues exist with this date.', 404, null)
+                res.send(response)
+            }
+            else {
+                let response = responseLib.formatResponse(false, 'Date based issues are found.', 200, dateBasedIssueDetails)
+                res.send(response)
+            }
+        })
+    }
+    else{
+        let response = responseLib.formatResponse(true, 'Date should be in YYYY-MM-DD format', 500, null)
+        res.send(response)
+    }
+    
+   
 }
 
 let sortCols = (req, res) => {

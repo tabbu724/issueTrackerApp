@@ -6,6 +6,9 @@ import { HttpClient,HttpErrorResponse,HttpParams ,HttpHeaders} from "@angular/co
 export class ApiService {
 public searchString
 public singleIssueId
+public createIssueFlag
+public showIssueFlag
+
   baseUrl = 'http://localhost:3000/api/v1/app';
   constructor(private http: HttpClient) {
     console.log("service const called");
@@ -43,9 +46,10 @@ public singleIssueId
   }
 
   logout=(authToken)=>{
-    const bodyParams ={}
-    const header=new HttpHeaders().set('authToken',authToken)
-    let response = this.http.post(`${this.baseUrl}/logOut`,{ bodyParams,headers:header});
+    const bodyParams = new HttpParams()
+      .set('authToken', authToken)
+    // const header=new HttpHeaders().set('authToken',authToken)
+    let response = this.http.post(`${this.baseUrl}/logOut`, bodyParams);
     return response;
   }
   getLocalStorage = (userData) => {
@@ -56,7 +60,9 @@ public singleIssueId
     localStorage.setItem('userDetails', JSON.stringify(userData));
   }
 
-
+deleteFromLocalstorage=(key)=>{
+  localStorage.removeItem(key)
+}
 
 
 
@@ -90,6 +96,34 @@ public singleIssueId
     return response;
   }
 
+  filterRowsByStatusSearchView=(status,authToken)=>{
+    const header=new HttpHeaders().set('authToken',authToken)
+    ,text=this.searchString
+    let response = this.http.get(`${this.baseUrl}/filterByStatus/${status}/${text}`,{headers:header});
+    return response;
+  }
+
+  filterRowsByDateSearchView=(creationDate,authToken)=>{
+    const header=new HttpHeaders().set('authToken',authToken)
+    ,text=this.searchString
+    let response = this.http.get(`${this.baseUrl}/filterByDate/${creationDate}/${text}`,{headers:header});
+    return response;
+  }
+
+  filterRowsByReporterIdSearchView=(reporterName,authToken)=>{
+    const header=new HttpHeaders().set('authToken',authToken)
+    ,text=this.searchString
+    let response = this.http.get(`${this.baseUrl}/filterByReporter/${reporterName}/${text}`,{headers:header});
+    return response;
+  }
+
+  filterRowsByTitleSearchView=(title,authToken)=>{
+    const header=new HttpHeaders().set('authToken',authToken)
+    ,text=this.searchString
+    let response = this.http.get(`${this.baseUrl}/filterByTitle/${title}/${text}`,{headers:header});
+    return response;
+  }
+
   sortByColumns=(data,authToken)=>{
     // const header=new HttpHeaders().set('authToken',authToken)
     console.log('data.title',data.title);
@@ -103,6 +137,19 @@ public singleIssueId
     let response = this.http.post(`${this.baseUrl}/sortByColumns`, bodyParams);
     return response;
   }
+
+sortSearch=(data,authToken)=>{
+  let text=this.searchString
+  const bodyParams = new HttpParams()
+      .set('status', data.status)
+      .set('createdOn', data.createdOn)
+      .set('reporterId', data.reporterId)
+      .set('authToken', authToken)
+      .set('text', text)
+      .set('title', data.title);
+    let response = this.http.post(`${this.baseUrl}/sortSearch`, bodyParams);
+    return response;
+}
 
   reportBug=(data,authToken)=>{
     const header=new HttpHeaders().set('authToken',authToken)
@@ -168,8 +215,29 @@ supplySearchString=(text)=>{
 this.searchString=text
 }
 
+sendSearchString=()=>{
+  return this.searchString
+}
 getIssueId=(id)=>{
   this.singleIssueId=id
+}
+
+receiveIssueDescriptionFlags=(key,value)=>{
+  if(key==='showIssueFlag'){
+    this.showIssueFlag=true
+  }
+  else if(key==='createIssueFlag'){
+this.createIssueFlag=value
+}
+}
+
+sendIssueDescriptionFlags=()=>{
+if(this.showIssueFlag){
+  return 'showIssueFlag'
+}
+else if(this.createIssueFlag){
+  return 'createIssueFlag'
+}
 }
 
 editIssue=(authToken,data)=>{

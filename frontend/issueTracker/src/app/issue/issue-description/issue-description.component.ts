@@ -3,7 +3,7 @@ import { ApiService } from 'src/app/api.service';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie';
 import { ToastrService } from "ngx-toastr";
-import { error } from 'protractor';
+
 
 
 
@@ -18,11 +18,17 @@ public issueInfo
 public title
 public description
 public file
+public status
+public attachments
+public assigneeName
 public editflag=false
+public createIssueFlag
+public showIssueFlag
 public currentDetails
   constructor(private hitApis: ApiService, private toastr: ToastrService, private _router: Router, private cookie: CookieService) { }
 
 showissue=()=>{
+  this.showIssueFlag=true
   this.hitApis.singleIssueDetails(this.authToken).subscribe(
     response=>{
       if (response['status'] == 200) {
@@ -65,13 +71,69 @@ this.hitApis.editIssue(this.authToken,data).subscribe(
 )
 }
 
+createIssue=()=>{
+  this.createIssueFlag=true
+  let data={
+    status:this.status,
+    title:this.title,
+    attachments:this.attachments,
+    assigneeName:this.assigneeName,
+    description:this.description
+  }
+this.hitApis.reportBug(data,this.authToken).subscribe(
+  response=>{
+    if (response['status'] == 200) {
+      console.log(response['data']);
+      this.toastr.success('new issue created')
+    }
+    else{
+      this.toastr.error( response['message']);
+    }
+  },
+  error=>{
+    let message = this.hitApis.handleError(error);
+    this.toastr.error(message)
+  }
+)
+}
+
 setEditFlag=()=>{
 this.editflag=true
 }
 
+logout = () => {
+  this.hitApis.logout(this.authToken).subscribe(
+    response => {
+      if (response['status'] == 200) {
+        this.cookie.remove('authToken')
+        this.cookie.remove('userId')
+        this.cookie.remove('userName')
+        this.toastr.success('Successfully logged out.')
+        this._router.navigate(['/login'])
+      }
+      else {
+        this.toastr.error(response['message']);
+      }
+    },
+    error => {
+      let message = this.hitApis.handleError(error);
+      this.toastr.error(message)
+    }
+  )
+}
+
+
   ngOnInit() {
     this.authToken=this.cookie.get('authToken')
-    this.showissue()
+    let flag=this.hitApis.sendIssueDescriptionFlags()
+    if(flag==='showIssueFlag'){
+     
+      this.showissue()
+    }
+    else if(flag==='createIssueFlag'){
+  
+this.createIssue()
+    }
   }
 
 }

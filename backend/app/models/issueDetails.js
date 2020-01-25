@@ -28,7 +28,7 @@ let issueDetailsSchema = new schema({
     },
     creationDateString: {
         type: String,
-        default:timeLib.formatCurrentDate()//display only
+        default:timeLib.parseToMyFormat()//to compare the date entered by user
     },
     attachmentUrls: [
         {

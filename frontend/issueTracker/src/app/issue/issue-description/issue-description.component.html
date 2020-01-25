@@ -9,65 +9,62 @@
         <ul class="navbar-nav ">
             
             <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/login']" (click)="logout()">LogOut</a>
+                <a class="nav-link" (click)="logout()">LogOut</a>
             </li>
         </ul>
     </div>
 </nav>
 
-<div class="container ">
+<div class="container " *ngIf="showIssueFlag">
     <h1>These are the issue details you needed.</h1>
-    <br><br>
-    <div class="card text-center">
-        <div class="card-header">
-          <ul class="nav nav-pills card-header-pills">
-            <li class="nav-item">
-              <a class="nav-link active" >Current issue details</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" (click)="setEditFlag()">Edit Issue Details</a>
-              </li>
-              
-          </ul>
-        </div>  
-        <div class="card-body" *ngIf="currentDetails==true && editflag==false">
-          <h5 class="card-title">{{issueInfo.title}}</h5>
-          <p class="card-text">description: {{issueInfo.description}}</p>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">status : {{issueInfo.status}}</li>
-            <li class="list-group-item">reporter : {{issueInfo.reporterName}}</li>
-            <li class="list-group-item">assignee : {{issueInfo.assigneeName}}</li>
-          </ul>
-          <p class="card-text">Attachments:</p>
-          <p class="card-text" *ngFor="let url of issueInfo.attachmentUrls">{{url}}</p>
-          <div class="card-footer text-muted">
-            Created On : {{issueInfo.creationDateString}}
-          </div>
-        </div>
-
-        <div class="card-body" *ngIf="currentDetails==true && editflag==true">
-            <div class="form-group">
-                <label for="title">title</label>
-                <input type="email" id="title" class="form-control" name="title" [(ngModel)]="title" >
-            </div>
-            <div class="form-group">
-                <label for="tidescriptiontle">description</label>
-                <input type="email" id="description" class="form-control" name="description" [(ngModel)]="description" >
-            </div>
-            <div class="input-group mb-3">
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="inputGroupFile02" [(ngModel)]="file">
-                  <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Choose file</label>
-                </div>
-                <div class="input-group-append">
-                  <span class="input-group-text" id="inputGroupFileAddon02" (click)="edit() ">Upload</span>
-                </div>
-              </div>
-            
-          </div>
-      </div>
-<br><br>
+    
+    
     
     
 </div>
+
+<div class="container " *ngIf="createIssueFlag">
+  <h1>Fill these details to report a bug.</h1>
+  <form #createIssueForm="ngForm" (ngSubmit)="showissue()">
+
+    <div class="form-group">
+        <label for="Title">Issue Title</label>
+        <input type="text" id="Title" class="form-control" name="Title" placeholder="Enter title of the issue." [(ngModel)]="title" autofocus required>
+    </div>
+
+    
+
+    <div class="form-group">
+        <label for="Description">Issue Description</label>
+        <input type="text" class="form-control" name="Description" id="Description" [(ngModel)]="description" required>
+    </div>
+
+    <div class="form-group">
+      <label for="Assignee">Assignee</label>
+      <input type="text" class="form-control" name="Assignee" id="Assignee" [(ngModel)]="assigneeName" required>
+  </div>
+
+    <div class="form-group">
+      <label for="Attachment">Add Attachment</label>
+      <input type="file" class="form-control-file" id="Attachment">
+    </div>
+
+    <div class="form-group">
+      <label for="Status">Choose Status</label>
+      <select  class="form-control" id="Status" [(ngModel)]="status" required>
+        <option>backlog</option>
+        <option>in-progress</option>
+        <option>in-test</option>
+        <option>done</option>
+      </select >
+    </div>
+
+    <button type="submit" class="btn btn-success btn-lg btn-block">Report Bug</button>
+    
+</form>
+  
+  
+  
+</div>
+
 

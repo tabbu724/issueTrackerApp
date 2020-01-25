@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule } from "@angular/forms";
+import { NgxPaginationModule } from "ngx-pagination";
 
 @NgModule({
   declarations: [SignupComponent, LoginComponent, DashboardComponent],
@@ -17,6 +18,7 @@ import { FormsModule } from "@angular/forms";
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    NgxPaginationModule,
     CookieModule.forChild(),
     ToastrModule.forRoot(),
     RouterModule.forChild([

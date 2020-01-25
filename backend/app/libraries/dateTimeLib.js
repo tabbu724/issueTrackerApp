@@ -12,8 +12,12 @@ let formatCurrentDate=()=>{
     return moment().format('llll')
 }
 
-let parseToMyFormat=(dateString)=>{
-return moment(dateString).format('YYYY-MM-DD')
+let parseToMyFormat=()=>{
+
+        return moment().format('YYYY-MM-DD')
+
+        
+    
 }
 
 let getLocalTime = () => {
@@ -30,5 +34,5 @@ module.exports = {
     getLocalTime: getLocalTime,
     convertToLocalTime: convertToLocalTime,
     parseToMyFormat:parseToMyFormat,
-    formatCurrentDate:formatCurrentDate
+    // formatCurrentDate:formatCurrentDate
 }

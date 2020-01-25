@@ -28,8 +28,19 @@ let validateUserName=(name)=>{
     }
 }
 
+let validateDateFormat =(date)=>{
+    let dateRegex=/^\d{4}-\d{2}-\d{2}$/
+    if(date.match(dateRegex)){
+        return true
+    }
+    else{
+        false
+    }
+}
+
 module.exports = {
     validateEmail: validateEmail,
     validatePassword: validatePassword,
-    validateUserName:validateUserName
+    validateUserName:validateUserName,
+    validateDateFormat:validateDateFormat
 }

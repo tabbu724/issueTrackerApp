@@ -60,6 +60,11 @@ let setRouter = (app) => {
   // search routes
 
   app.get(baseUrl + '/search/:text', authMiddleware.authorisation, searchController.searchIssue)
+  app.post(baseUrl + '/sortSearch', authMiddleware.authorisation, searchController.sortColsForSearchText)
+  app.get(baseUrl + '/filterByStatus/:status/:text', authMiddleware.authorisation, searchController.filterRowsByStatus)
+  app.get(baseUrl + '/filterByDate/:creationDate/:text', authMiddleware.authorisation, searchController.filterRowsByDate)
+  app.get(baseUrl + '/filterByReporter/:reporterName/:text', authMiddleware.authorisation, searchController.filterRowsByReporter)
+  app.get(baseUrl + '/filterByTitle/:title/:text', authMiddleware.authorisation, searchController.filterRowsByTitle)
 }
 
 let passportFbStrategy = (passport) => {
