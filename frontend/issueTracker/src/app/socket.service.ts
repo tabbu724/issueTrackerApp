@@ -67,7 +67,7 @@ export class SocketService {
   }
 
   public sendNotification = (updatedDetails) => {
-    this.socket.emit('chat-msg', updatedDetails);
+    this.socket.emit('issueUpdated', updatedDetails);
   }
 
   public exitSocket=()=>{

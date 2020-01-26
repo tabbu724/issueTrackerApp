@@ -152,34 +152,37 @@ sortSearch=(data,authToken)=>{
 }
 
   reportBug=(data,authToken)=>{
-    const header=new HttpHeaders().set('authToken',authToken)
+    // const header=new HttpHeaders().set('authToken',authToken)
     const bodyParams = new HttpParams()
       .set('status', data.status)
       .set('title', data.title)
       .set('attachments', data.attachments)
       .set('assigneeName', data.assigneeName)
+      .set('authToken',authToken)
       .set('title', data.description);
-    let response = this.http.post(`${this.baseUrl}/createIssue`, { bodyParams,headers:header});
+    let response = this.http.post(`${this.baseUrl}/createIssue`, bodyParams);
     return response;
   }
 
   comment=(data,authToken)=>{
-    const header=new HttpHeaders().set('authToken',authToken)
+    // const header=new HttpHeaders().set('authToken',authToken)
     const bodyParams = new HttpParams()
       .set('username', data.username)
       .set('issueId', data.issueId)
+      .set('authToken',authToken)
       .set('comment', data.comment);
-    let response = this.http.post(`${this.baseUrl}/comment`, { bodyParams,headers:header});
+    let response = this.http.post(`${this.baseUrl}/comment`,  bodyParams);
     return response;
   }
 
   addAsWatcher=(data,authToken)=>{
-    const header=new HttpHeaders().set('authToken',authToken)
+    // const header=new HttpHeaders().set('authToken',authToken)
     const bodyParams = new HttpParams()
       .set('userId', data.userId)
       .set('issueId', data.issueId)
+      .set('authToken',authToken)
       .set('userName', data.userName);
-    let response = this.http.post(`${this.baseUrl}/addAsWatcher`, { bodyParams,headers:header});
+    let response = this.http.post(`${this.baseUrl}/addAsWatcher`, bodyParams);
     return response;
   }
 
@@ -198,10 +201,18 @@ sortSearch=(data,authToken)=>{
   }
 
   
-  singleIssueDetails=(authToken)=>{
-    const header=new HttpHeaders().set('authToken',authToken)
+  singleIssueDetails=(issueId,authToken)=>{
+    if(issueId){
+      const header=new HttpHeaders().set('authToken',authToken)
+      let response = this.http.get(`${this.baseUrl}/singleIssueDetails/${issueId}`,{headers:header});
+      return response;
+    }
+    else{
+      const header=new HttpHeaders().set('authToken',authToken)
     let response = this.http.get(`${this.baseUrl}/singleIssueDetails/${this.singleIssueId}`,{headers:header});
     return response;
+    }
+    
   }
 
   search=(authToken)=>{
@@ -222,20 +233,28 @@ getIssueId=(id)=>{
   this.singleIssueId=id
 }
 
-receiveIssueDescriptionFlags=(key,value)=>{
+receiveIssueDescriptionFlags=(key)=>{
+  console.log(`key = ${key}`);
+  
   if(key==='showIssueFlag'){
     this.showIssueFlag=true
+    this.createIssueFlag=false
   }
   else if(key==='createIssueFlag'){
-this.createIssueFlag=value
+this.createIssueFlag=true
+this.showIssueFlag=false
 }
 }
 
 sendIssueDescriptionFlags=()=>{
-if(this.showIssueFlag){
+if(this.showIssueFlag===true){
+  console.log('sending show to issue view');
+  
   return 'showIssueFlag'
 }
-else if(this.createIssueFlag){
+else if(this.createIssueFlag===true){
+  console.log('sending create to issue view');
+  
   return 'createIssueFlag'
 }
 }

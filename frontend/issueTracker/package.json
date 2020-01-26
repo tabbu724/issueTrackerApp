@@ -19,6 +19,7 @@
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
+    "@kolkov/angular-editor": "^1.0.2",
     "@nguniversal/express-engine": "^8.2.6",
     "@popperjs/core": "^2.0.0",
     "bootstrap": "^4.4.1",

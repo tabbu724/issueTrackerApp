@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/api.service';
+import { SocketService } from 'src/app/socket.service';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie';
 import { ToastrService } from "ngx-toastr";
@@ -24,7 +25,7 @@ export class DashboardComponent implements OnInit {
   public createIssueFlag=false
   public showIssueFlag=false
   public page = 1
-  constructor(private hitApis: ApiService, private toastr: ToastrService, private _router: Router, private cookie: CookieService) {
+  constructor(private hitApis: ApiService,private socket: SocketService, private toastr: ToastrService, private _router: Router, private cookie: CookieService) {
 
   }
 
@@ -46,6 +47,9 @@ formatDate=(response)=>{
           this.formatDate(response)
 
           this.issueInfo = response['data']
+          this.verifyUser()
+          this.makeUserOnline()
+          this.receiveNotifications()
         }
         else {
           this.toastr.error(response['message']);
@@ -303,8 +307,10 @@ close=()=>{
 }
 
 setCreateIssueFlag=()=>{
-  this.createIssueFlag=true
-this.hitApis.receiveIssueDescriptionFlags('createIssueFlag',this.createIssueFlag)
+  // this.createIssueFlag=true
+  console.log('create issue set by dashboard');
+  
+this.hitApis.receiveIssueDescriptionFlags('createIssueFlag')
 setTimeout(() => {
   this._router.navigate(['/issueDescription']);
 }, 1000);
@@ -312,8 +318,10 @@ setTimeout(() => {
 
 
 setShowIssueFlag=()=>{
-  this.showIssueFlag=true
-  this.hitApis.receiveIssueDescriptionFlags('showIssueFlag',this.showIssueFlag)
+  console.log('show issue set by dashboard');
+  
+  // this.showIssueFlag=true
+  this.hitApis.receiveIssueDescriptionFlags('showIssueFlag')
 }
 
   logout = () => {
@@ -324,6 +332,7 @@ setShowIssueFlag=()=>{
           this.cookie.remove('userId')
           this.cookie.remove('userName')
           this.toastr.success('Successfully logged out.')
+          this.disconnect()
           this._router.navigate(['/login'])
         }
         else {
@@ -346,6 +355,70 @@ setShowIssueFlag=()=>{
       this._router.navigate(['/issueDescription']);
     }, 1000);
   }
+
+// socket related
+
+verifyUser=()=>{
+  this.socket.verifyUser().subscribe(
+    (data) => {
+      // this.connDisconnected = false;
+      this.socket.setUser(this.authToken);
+      this.receiveError()
+      // this.onlineUserList();
+    },
+    (err) => {
+      this.socket.errorHandler(err);
+    }
+  )
+}
+
+receiveError=()=>{
+  this.socket.receiveError().subscribe(
+    (data) => {
+      // this.connDisconnected = false;
+      console.log(data);
+      this.toastr.warning(data)
+      // this.onlineUserList();
+    },
+    (err) => {
+      this.socket.errorHandler(err);
+    }
+  )
+}
+
+makeUserOnline=()=>{
+  this.socket.makeUserOnline().subscribe(
+    (data) => {
+      // this.connDisconnected = false;
+      console.log(data);
+      
+      // this.onlineUserList();
+    },
+    (err) => {
+      this.socket.errorHandler(err);
+    }
+  )
+}
+
+receiveNotifications=()=>{
+  this.socket.receiveNotifications(this.userId).subscribe(
+    (data) => {
+      // this.connDisconnected = false;
+      console.log(data);
+      this.toastr.warning(data,'notification')
+      // this.onlineUserList();
+    },
+    (err) => {
+      this.socket.errorHandler(err);
+    }
+  )
+}
+
+disconnect=()=>{
+  this.socket.exitSocket()
+  
+}
+
   ngOnInit() {
     this.userName = this.cookie.get('userName')
     this.userId = this.cookie.get('userId')

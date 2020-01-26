@@ -30,6 +30,7 @@ let dataObject={
             })
         })
     }
+console.log('upload middleware-----------------',req.files);
 
     if (req.files != undefined) {
         let fileArray = req.files

@@ -70,12 +70,12 @@ let sendNotification = (server) => {
                     socket.emit('online-status',`${currentUser} is online.`)
                     socket.on('issueUpdated', (info) => {
                         console.log('update event listened');
-                        if(currentUser!=info.reporterId){
+                        // if(currentUser!=info.reporterId){
                             socket.emit(info.reporterId, info.msg)
-                        }
-                        if(currentUser!=info.assigneeId){
+                        // }
+                        // if(currentUser!=info.assigneeId){
                             socket.emit(info.assigneeId, info.msg)
-                        }
+                        // }
                         
                         redisLib.showHash(info.issueId + '{Watcher-list}', (err, data) => {
                             if (err) {

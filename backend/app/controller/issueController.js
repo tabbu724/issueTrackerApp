@@ -130,8 +130,8 @@ let commentOnIssue = (req, res) => {
     let commentDetails = {
         comment: req.body.comment,
         userName: req.body.username,
-        commentDate: timeLib.formatCurrentDate()
-    }
+        commentDate: timeLib.now()
+        }
     redisLib.createHash(req.body.issueId + '{Comment-list}', commentId, JSON.stringify(commentDetails), (err, commentCreationStatus) => {
         if (err) {
             let response = responseLib.formatResponse(true, err.message, 500, null)
@@ -155,7 +155,7 @@ let commentOnIssue = (req, res) => {
 
                     // console.log('created commentInfo-> ',JSON.parse(commentData[commentId]));
 
-                    let commentObject = JSON.parse(commentData[commentId])
+                    let commentObject = JSON.parse(commentData)
 
                     commentObject['notifyMsg'] = `${req.body.username} commented on issue with id : ${req.body.issueId} .`
                     let response = responseLib.formatResponse(false, 'comment created successfully.', 200, commentObject)

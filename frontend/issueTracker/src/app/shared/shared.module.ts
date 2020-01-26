@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CommentBoxComponent } from './comment-box/comment-box.component';
+import { DescriptionBoxComponent } from './description-box/description-box.component';
 
 
 
 @NgModule({
-  declarations: [CommentBoxComponent],
+  declarations: [ DescriptionBoxComponent],
   imports: [
     CommonModule
   ]
 })
-export class SharedModule { }
+export class SharedModule { 
+  
+}
