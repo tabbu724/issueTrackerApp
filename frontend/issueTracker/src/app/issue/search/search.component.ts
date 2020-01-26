@@ -265,6 +265,23 @@ export class SearchComponent implements OnInit {
     this.freporter = false
   }
 
+  setShowIssueFlag=()=>{
+    console.log('show issue set by dashboard');
+    
+    // this.showIssueFlag=true
+    this.hitApis.receiveIssueDescriptionFlags('showIssueFlag')
+  }
+
+  show = (issueId) => {
+    // console.log('issueId', issueId);
+    this.hitApis.getIssueId(issueId)
+    this.setShowIssueFlag()
+    this.toastr.success('Fetching Details.Please wait...');
+    setTimeout(() => {
+      this._router.navigate(['/issueDescription']);
+    }, 1000);
+  }
+
   filterbyreporter = () => {
 
     this.freporter = true
