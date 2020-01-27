@@ -4,15 +4,15 @@
     </head>
 <body>
     <button>
-        <a href="http://localhost:3000/api/v1/app/auth/facebook">login via fb</a>
-        <a href="http://localhost:3000/auth/google">login via google</a>
+        <a href="http://localhost:3004/api/v1/app/auth/facebook">login via fb</a>
+        <a href="http://localhost:3004/auth/google">login via google</a>
     </button>
 
 
     <script src="./jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-    const socket=io('http://localhost:3000')
+    const socket=io('http://localhost:3004')
 let userId='106618984403917733636'
 
 let authToken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJ0bkdLLW0wTCIsImlhdCI6MTU3OTAwMzA1NTI1MiwiZXhwIjoxNTc5MDg5NDU1LCJzdWIiOiJhdXRoVG9rZW4iLCJpc3MiOiJUYWJidSBTZWhnYWwiLCJkYXRhIjp7InVzZXJJZCI6IjI2ODc3ODcwNDQ2NDk2OTMiLCJ1c2VyTmFtZSI6IlRhYmJ1QFo5UiIsImVtYWlsIjpudWxsfX0.WnXCXRcbQ5SXo21eLp4avz5p1ArCf9FXP3lZAmXbNfE'

@@ -60,15 +60,15 @@ let filterRowsByTitle = (req, res) => {
 let filterRowsByReporter = (req, res) => {
     issueModel.find({ reporterName: req.params.reporterName ,assigneeName: req.authorisedUser.userName}, (err, reporterBasedIssueDetails) => {
         if (err) {
-            let response = responseLib.formatResponse(true, 'Error in finding issues with this reporter id.', 500, null)
+            let response = responseLib.formatResponse(true, 'Error in finding issues with this reporter name.', 500, null)
             res.send(response)
         }
         else if (checkLib.isEmpty(reporterBasedIssueDetails)) {
-            let response = responseLib.formatResponse(true, 'No issues exist with this reporter id.', 404, null)
+            let response = responseLib.formatResponse(true, 'No issues exist with this reporter name.', 404, null)
             res.send(response)
         }
         else {
-            let response = responseLib.formatResponse(false, 'Reporter id based issues are found.', 200, reporterBasedIssueDetails)
+            let response = responseLib.formatResponse(false, 'Reporter name based issues are found.', 200, reporterBasedIssueDetails)
             res.send(response)
         }
     })
@@ -139,30 +139,36 @@ let createIssue = (req, res) => {
     }
     else{
         // console.log('reporter',req.authorisedUser.userName);
+        if(req.body.status==undefined||req.body.title==undefined||req.body.description==undefined||req.body.assigneeName==undefined){
+            let response = responseLib.formatResponse(true, 'Some required parameters are missing.', 500, null)
+                res.send(response);
+        }
+        else{
+            let newIssue = new issueModel({
+                issueId: shortid.generate(),
+                status: req.body.status,
+                title: req.body.title,
+                reporterName: req.authorisedUser.userName,
+                assigneeName: req.body.assigneeName,
+                attachmentUrls: req.attachments,
+                description:req.body.description
+            })
+            newIssue.save((err, newIssueData) => {
+                if (err) {
+                    let response = responseLib.formatResponse(true, 'Error in creating new issue.', 500, null)
+                    res.send(response);
         
-        let newIssue = new issueModel({
-            issueId: shortid.generate(),
-            status: req.body.status,
-            title: req.body.title,
-            reporterName: req.authorisedUser.userName,
-            assigneeName: req.body.assigneeName,
-            attachmentUrls: req.attachments,
-            description:req.body.description
-        })
-        newIssue.save((err, newIssueData) => {
-            if (err) {
-                let response = responseLib.formatResponse(true, 'Error in creating new issue.', 500, null)
-                res.send(response);
-    
-            }
-            else {
-                let newIssueDataObject = newIssueData.toObject()
-                delete newIssueDataObject._id
-                delete newIssueDataObject.__v
-                let response = responseLib.formatResponse(false, 'New issue has been created.', 200, newIssueDataObject)
-                res.send(response);
-            }
-        })
+                }
+                else {
+                    let newIssueDataObject = newIssueData.toObject()
+                    delete newIssueDataObject._id
+                    delete newIssueDataObject.__v
+                    let response = responseLib.formatResponse(false, 'New issue has been created.', 200, newIssueDataObject)
+                    res.send(response);
+                }
+            })
+        }
+        
     }
     
   

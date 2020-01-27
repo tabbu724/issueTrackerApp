@@ -9,10 +9,10 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SocketService {
-  private url = 'http://localhost:3000';
-  private authToken=this.cookie.get('authToken');
-  private userId=this.cookie.get('userId');
-  private socket;
+  public url = 'http://localhost:3004';
+  public authToken=this.cookie.get('authToken');
+  public userId=this.cookie.get('userId');
+  public socket;
   constructor(private http:HttpClient,private cookie:CookieService) {
     // initial connection setup through handshake
     this.socket = io(this.url);

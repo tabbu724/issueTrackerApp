@@ -98,15 +98,15 @@ let filterRowsByReporter = (req, res) => {
     , searchCriteria = { reporterName: req.params.reporterName  , $text: { $search: searchString } }
     issueModel.find(searchCriteria, (err, reporterBasedIssueDetails) => {
         if (err) {
-            let response = responseLib.formatResponse(true, 'Error in finding issues with this reporter id.', 500, null)
+            let response = responseLib.formatResponse(true, 'Error in finding issues with this reporter name.', 500, null)
             res.send(response)
         }
         else if (checkLib.isEmpty(reporterBasedIssueDetails)) {
-            let response = responseLib.formatResponse(true, 'No issues exist with this reporter id.', 404, null)
+            let response = responseLib.formatResponse(true, 'No issues exist with this reporter name.', 404, null)
             res.send(response)
         }
         else {
-            let response = responseLib.formatResponse(false, 'Reporter id based issues are found.', 200, reporterBasedIssueDetails)
+            let response = responseLib.formatResponse(false, 'Reporter name based issues are found.', 200, reporterBasedIssueDetails)
             res.send(response)
         }
     })

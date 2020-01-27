@@ -9,7 +9,7 @@ public singleIssueId
 public createIssueFlag
 public showIssueFlag
 
-  baseUrl = 'http://localhost:3000/api/v1/app';
+  baseUrl = 'http://localhost:3004/api/v1/app';
   constructor(private http: HttpClient) {
     console.log("service const called");
 

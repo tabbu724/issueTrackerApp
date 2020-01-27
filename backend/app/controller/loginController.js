@@ -240,7 +240,7 @@ let login = (req, res) => {
         .then(generateAuthToken)
         .then(authLib.createAndSaveAuthModel)
         .then((resolve) => {
-            let response = responseLib.formatResponse(false, 'A new user has been created successfully', 200, resolve)
+            let response = responseLib.formatResponse(false, 'Login successfull.', 200, resolve)
             res.send(response)
         })
         .catch((err) => {
