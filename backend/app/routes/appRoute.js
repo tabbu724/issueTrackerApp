@@ -20,13 +20,14 @@ let setRouter = (app) => {
   let baseUrl = `${config.configuration.version}/app`
 
   app.use(cors())
-//   app.all(baseUrl+'/*', function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     next();
-// });
+  app.all(baseUrl+'/*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    next();
+});
 
   app.post(baseUrl + '/register', controller.signup)
-/**@api {post} /api/v1/app/register User Sign Up
+/**@api {post} /register User Sign Up
+ * @apiName Register
      * @apiVersion 1.0.0
      * @apiGroup Create
      * @apiParam {string} username Pass the username as body parameter
@@ -67,7 +68,8 @@ let setRouter = (app) => {
      */
 
   app.post(baseUrl + '/login', controller.login)
-/**@api {post} /api/v1/app/login User Log In
+/**@api {post} /login User Log In
+ * @apiName Login
      * @apiVersion 1.0.0
      * @apiGroup Create
      * @apiParam {string} usernameEmail Pass the username or email as body parameter
@@ -104,7 +106,8 @@ let setRouter = (app) => {
      */
 
   app.get(baseUrl + "/auth/facebook", passport.authenticate("facebook"))
-  /**@api {get} /api/v1/app/auth/facebook             To login through facebook
+  /**@api {get} /auth/facebook - To login through facebook
+   * @apiName Facebook Login
      * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiSuccessExample {json} Success-Response:
@@ -121,7 +124,8 @@ let setRouter = (app) => {
   app.get('/auth/google', passport.authenticate('google', {
     scope: ['profile', 'email']
   }));
- /**@api {get} /api/v1/app/auth/google             To login through google
+ /**@api {get} /auth/google To login through google
+  * @apiName Google Login
      * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiSuccessExample {json} Success-Response:
@@ -138,7 +142,8 @@ let setRouter = (app) => {
 
   
   app.post(baseUrl + '/logOut', authMiddleware.authorisation, controller.logout)
-/**@api {post} /api/v1/app/login User Log In
+/**@api {post} /logOut To log out the user
+ * @apiName Logout
      * @apiVersion 1.0.0
      * @apiGroup Create
      * @apiParam {string} authToken Pass the authToken as body parameter or header
@@ -166,7 +171,8 @@ let setRouter = (app) => {
 
   // dashboard routes
   app.get(baseUrl + '/viewDashboard', authMiddleware.authorisation, dashboardController.dashboardInfo)
-  /**@api {get} /api/v1/app/viewDashboard             View the user dashboard
+  /**@api {get} /viewDashboard View the user dashboard
+   * @apiName viewDashboard
      * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} authToken Pass the authToken as a query parameter
@@ -210,8 +216,9 @@ let setRouter = (app) => {
 }
      */
   app.get(baseUrl + '/filterByStatus/:status', authMiddleware.authorisation, dashboardController.filterRowsByStatus)
-/**@api {get} /api/v1/app/filterByStatus/:status      Filter the assigned issues by status                                                                                                                                                                                      
- * @apiVersion 1.0.0
+/**@api {get} /filterByStatus/:status Filter the assigned issues by status                                                                                                                                                                                      
+*@apiName filterByStatus
+* @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} authToken Pass the authToken as a query parameter
      * @apiParam {string} status pass status(in-progress,backlog,in-test,done) as route parameter
@@ -252,7 +259,8 @@ let setRouter = (app) => {
 
 
   app.get(baseUrl + '/filterByDate/:creationDate', authMiddleware.authorisation, dashboardController.filterRowsByDate)
-  /**@api {get} /api/v1/app/filterByDate/:creationDate      Filter the assigned issues by creation date
+  /**@api {get} /filterByDate/:creationDate Filter the assigned issues by creation date
+  * @apiName filterByDate
   * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} authToken Pass the authToken as a query parameter
@@ -297,7 +305,8 @@ let setRouter = (app) => {
   
   
   app.get(baseUrl + '/filterByReporter/:reporterName', authMiddleware.authorisation, dashboardController.filterRowsByReporter)
-  /**@api {get} /api/v1/app/filterByReporter/:reporterName     Filter the assigned issues by resporter name
+  /**@api {get} /filterByReporter/:reporterName Filter the assigned issues by resporter name
+   * @apiName filterByReporter
   * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} authToken Pass the authToken as a query parameter
@@ -347,7 +356,8 @@ let setRouter = (app) => {
   
   
   app.get(baseUrl + '/filterByTitle/:title', authMiddleware.authorisation, dashboardController.filterRowsByTitle)
-  /**@api {get} /api/v1/app/filterByTitle/:title     Filter the assigned issues by title
+  /**@api {get} /filterByTitle/:title Filter the assigned issues by title
+   * @apiName filterByTitle 
   * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} authToken Pass the authToken as a query parameter
@@ -395,8 +405,9 @@ let setRouter = (app) => {
      */
   
   app.post(baseUrl + '/sortByColumns', authMiddleware.authorisation, dashboardController.sortCols)
-  /**@api {post} /api/v1/app/sortByColumns    Sort issues by various columns(title,status,date,reporter).Pass any one.
-     * @apiVersion 1.0.0
+  /**@api {post} /sortByColumns Sort issues by various columns(title,status,date,reporter).Pass any one.
+  *@apiName sortByColumns
+  * @apiVersion 1.0.0
      * @apiGroup Create
      * @apiParam {string} status Pass true as body parameter 
      * * @apiParam {string} creationDate Pass true as body parameter 
@@ -441,7 +452,8 @@ let setRouter = (app) => {
   
   
   app.post(baseUrl + '/createIssue', authMiddleware.authorisation, upload.any(), uploadMiddleware.fileUploader, dashboardController.createIssue)
-/**@api {post} /api/v1/app/createIssue      To report a bug
+/**@api {post} /createIssue To report a bug
+ * @apiName createIssue
      * @apiVersion 1.0.0
      * @apiGroup Create
      * @apiParam {string} status Pass the authToken as body parameter 
@@ -495,7 +507,8 @@ let setRouter = (app) => {
 
   // issue description routes
   app.put(baseUrl + '/editIssue', authMiddleware.authorisation, upload.any(), uploadMiddleware.fileUploader, issueController.editIssueDetails)
-  /**@api {put} /api/v1/app/editIssue    To edit the details of an issue
+  /**@api {put} /editIssue To edit the details of an issue
+   * @apiName editIssue
      * @apiVersion 1.0.0
      * @apiGroup Update
      * @apiParam {string} issueId Pass the issue id as body parameter
@@ -543,7 +556,8 @@ let setRouter = (app) => {
      */
   
   app.post(baseUrl + '/comment', authMiddleware.authorisation, issueController.commentOnIssue)
- /**@api {post} /api/v1/app/comment    To comment on an issue
+ /**@api {post} /comment To comment on an issue
+  * @apiName comment
      * @apiVersion 1.0.0
      * @apiGroup Create
      * @apiParam {string} issueId Pass the issue id as body parameter
@@ -580,7 +594,8 @@ let setRouter = (app) => {
      */
 
   app.post(baseUrl + '/addAsWatcher', authMiddleware.authorisation, issueController.addWatcher)
-/**@api {post} /api/v1/app/addAsWatcher    To be added as watcher on an issue
+/**@api {post} /addAsWatcher To be added as watcher on an issue
+ * @apiName addAsWatcher
      * @apiVersion 1.0.0
      * @apiGroup Create
      * @apiParam {string} issueId Pass the issue id as body parameter
@@ -616,7 +631,8 @@ let setRouter = (app) => {
 
 
   app.get(baseUrl + '/listWatchers/:issueId', authMiddleware.authorisation, issueController.listAllWatcher)
-  /**@api {get} /api/v1/app/listWatchers/:issueId    To be list all watchers of an issue
+  /**@api {get} /listWatchers/:issueId To be list all watchers of an issue
+   * @apiName listWatchers
      * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} issueId Pass the issue id as route parameter
@@ -650,7 +666,8 @@ let setRouter = (app) => {
      */
   
   app.post(baseUrl + '/assignIssue', authMiddleware.authorisation, issueController.assignIssueToOthers)
-  /**@api {post} /api/v1/app/assignIssue   To be assign issue to other user
+  /**@api {post} /assignIssue To be assign issue to other user
+   * @apiName assignIssue
    * @apiVersion 1.0.0
      * @apiGroup Create
      * @apiParam {string} issueId Pass the issue id as body parameter
@@ -686,7 +703,8 @@ let setRouter = (app) => {
      */
   
   app.get(baseUrl + '/singleIssueDetails/:issueId', authMiddleware.authorisation, issueController.issueDescriptionViewInfo)
-  /**@api {get} /api/v1/app/singleIssueDetails/:issueId   To get details of a particular issue 
+  /**@api {get} /singleIssueDetails/:issueId To get details of a particular issue 
+   * @apiName singleIssueDetails
    * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} issueId Pass the issue id as body parameter
@@ -730,7 +748,8 @@ let setRouter = (app) => {
   // search routes
 
   app.get(baseUrl + '/search/:text', authMiddleware.authorisation, searchController.searchIssue)
-  /**@api {get} /api/v1/app/search/:text   To search issues by any text
+  /**@api {get} /search/:text To search issues by any text
+   * @apiName search
    * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} text Pass the text to search as route parameter
@@ -772,7 +791,8 @@ let setRouter = (app) => {
      */
   
   app.post(baseUrl + '/sortSearch', authMiddleware.authorisation, searchController.sortColsForSearchText)
-   /**@api {post} /api/v1/app/sortSearch   To get details of a particular issue 
+   /**@api {post} /sortSearch To get details of a particular issue 
+    * @apiName sortSearch
    * @apiVersion 1.0.0
      * @apiGroup Create
      * @apiParam {string} text Pass the text to search as body parameter
@@ -821,7 +841,8 @@ let setRouter = (app) => {
      */
   
   app.get(baseUrl + '/filterByStatus/:status/:text', authMiddleware.authorisation, searchController.filterRowsByStatus)
-  /**@api {get} /api/v1/app/filterByStatus/:status/:text   To filter the searchedd content by status 
+  /**@api {get} /filterByStatus/:status/:text To filter the searchedd content by status 
+   * @apiName filterSearch ByStatus
    * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} text Pass the text as route parameter
@@ -870,7 +891,8 @@ let setRouter = (app) => {
      */
   
   app.get(baseUrl + '/filterByDate/:creationDate/:text', authMiddleware.authorisation, searchController.filterRowsByDate)
-  /**@api {get} /api/v1/app/filterByDate/:creationDate/:text   To filter the searched content by creation date 
+  /**@api {get} /filterByDate/:creationDate/:text To filter the searched content by creation date 
+   * @apiName filter search ByDate
    * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} text Pass the text as route parameter
@@ -918,7 +940,8 @@ let setRouter = (app) => {
      */
   
   app.get(baseUrl + '/filterByReporter/:reporterName/:text', authMiddleware.authorisation, searchController.filterRowsByReporter)
-  /**@api {get} /api/v1/app/filterByReporter/:reporterName/:text   To filter the searched content by reporter name 
+  /**@api {get} /filterByReporter/:reporterName/:text To filter the searched content by reporter name 
+   * @apiName filter search ByReporter
    * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} text Pass the text as route parameter
@@ -967,7 +990,8 @@ let setRouter = (app) => {
      */
   
   app.get(baseUrl + '/filterByTitle/:title/:text', authMiddleware.authorisation, searchController.filterRowsByTitle)
-/**@api {get} /api/v1/app/filterByTitle/:title/:text   To filter the searched content title
+/**@api {get} /filterByTitle/:title/:text To filter the searched content title
+ * @apiName filter search ByTitle
    * @apiVersion 1.0.0
      * @apiGroup Read
      * @apiParam {string} text Pass the text as route parameter
