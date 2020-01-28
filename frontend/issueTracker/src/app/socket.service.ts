@@ -9,7 +9,10 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SocketService {
-  public url = 'http://localhost:3004';
+  // for local
+  // public url = 'http://localhost:3004'; 
+  // for nginx
+  public url = 'http://api.showcasemyskills.xyz';
   public authToken=this.cookie.get('authToken');
   public userId=this.cookie.get('userId');
   public socket;

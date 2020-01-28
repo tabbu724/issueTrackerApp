@@ -10,7 +10,6 @@ import { ApiService } from './api.service';
 import { SocketService } from './socket.service';
 import { LoginComponent } from './user/login/login.component';
 import { UserModule } from './user/user.module';
-import { SharedModule } from './shared/shared.module';
 import { IssueModule } from './issue/issue.module';
 import { NotFoundComponent } from './not-found/not-found.component';
 
@@ -25,11 +24,11 @@ import { NotFoundComponent } from './not-found/not-found.component';
     BrowserModule,
     AppRoutingModule,
     UserModule,
-    SharedModule,
     IssueModule,
     RouterModule.forRoot(
      [
       {path:'login',component:LoginComponent},
+      {path:'/',component:LoginComponent},
       {path:'**',component:NotFoundComponent},
       {path:'',redirectTo:'login',pathMatch:'full'}
      ]
