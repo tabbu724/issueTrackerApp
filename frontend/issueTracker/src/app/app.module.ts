@@ -28,7 +28,6 @@ import { NotFoundComponent } from './not-found/not-found.component';
     RouterModule.forRoot(
      [
       {path:'login',component:LoginComponent},
-      {path:'/',component:LoginComponent},
       {path:'**',component:NotFoundComponent},
       {path:'',redirectTo:'login',pathMatch:'full'}
      ]
