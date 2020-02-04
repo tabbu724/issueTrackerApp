@@ -11,16 +11,16 @@ let createHash=(hashname,key,value,cb)=>{
     
     redisClient.hmset(hashname,key,value,(err,result)=>{
         if (err) {
-            console.log('Error in creating comments.');
+            // console.log('Error in creating hash.');
             cb(err, null)
         }
         else if (checkLib.isEmpty(result)) {
-            console.log('No comment created.');
-            console.log(result);
-            cb(null, {})
+            // console.log('No hash created.');
+            // console.log(result);
+            cb(null, [])
         }
         else {
-            console.log('Comment created.', result);
+            // console.log('Hash created.', result);
             cb(null, result)
         }
     })
@@ -29,16 +29,16 @@ let createHash=(hashname,key,value,cb)=>{
 let showHash=(hashname,cb)=>{
     redisClient.hgetall(hashname, (err, result) => {
         if (err) {
-            console.log('error in getting all comments');
+            // console.log('error in getting all comments');
             cb(err, null)
         }
         else if (checkLib.isEmpty(result)) {
-            console.log('No comments found');
-            console.log(result);
-            cb(null, {})
+            // console.log('No comments found');
+            // console.log(result);
+            cb(null, [])
         }
         else {
-            console.log('All comments found', result);
+            // console.log('All comments found', result);
             cb(null, result)
         }
     })

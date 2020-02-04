@@ -10,6 +10,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule } from "@angular/forms";
 import { NgxPaginationModule } from "ngx-pagination";
+import { SharedModule } from '../shared/shared.module';
+
 
 @NgModule({
   declarations: [SignupComponent, LoginComponent, DashboardComponent],
@@ -19,6 +21,7 @@ import { NgxPaginationModule } from "ngx-pagination";
     HttpClientModule,
     BrowserAnimationsModule,
     NgxPaginationModule,
+    SharedModule,
     CookieModule.forChild(),
     ToastrModule.forRoot(),
     RouterModule.forChild([

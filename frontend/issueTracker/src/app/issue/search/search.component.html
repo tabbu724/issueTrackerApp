@@ -1,93 +1,97 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-secondary mb-4 sticky-top">
-    <a class="navbar-brand">Issue Tracker</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+  <a class="navbar-brand" [routerLink]="['/dashboard']">Issue Tracker</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-        <ul class="navbar-nav ">
-          <li class="nav-item">
-            <a class="nav-link" (click)="filterbytitle()">Filter By Title</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" (click)="filterbystatus()">Filter By Status</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" (click)="  filterbydate()">Filter By Date</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" (click)="filterbyreporter()">Filter By Reporter</a>
-          </li>
-            <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/login']">LogOut</a>
-            </li>
-        </ul>
-    </div>
+  <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+    <ul class="navbar-nav ">
+      <li class="nav-item">
+        <a class="nav-link" (click)="filterbytitle()">Filter By Title&nbsp;<i class="fa fa-filter"
+            aria-hidden="true"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="filterbystatus()">Filter By Status&nbsp;<i class="fa fa-filter"
+            aria-hidden="true"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="  filterbydate()">Filter By Date&nbsp;<i class="fa fa-filter"
+            aria-hidden="true"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="filterbyreporter()">Filter By Reporter &nbsp;<i class="fa fa-filter"
+            aria-hidden="true"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="logout()">LogOut &nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></a>
+      </li>
+    </ul>
+  </div>
 </nav>
 
 <div class="container " *ngIf="resultsAvailable">
-    <h1>Search results for "{{searchString}}" :</h1>
-    <br> <br>
-    
-    <div class="input-group mb-3 mt-3" *ngIf="ftitle||fstatus||freporter||fdate">
-      <!-- <div> -->
-        <div class="input-group-prepend" *ngIf="ftitle">
-          <button class="btn btn-outline-secondary" type="button" id="button-addon1" (click)="filterIssues()">Filter Issues
-            By Title</button>
-        </div>
-      <!-- </div> -->
-      
-      <div class="input-group-prepend" *ngIf="fstatus">
-        <button *ngIf="fstatus" class="btn btn-outline-secondary" type="button" id="button-addon1"
-          (click)="filterIssues()">Filter Issues By Status</button>
-      </div>
-  
-  
-      <div class="input-group-prepend" *ngIf="freporter">
-        <button *ngIf="freporter" class="btn btn-outline-secondary" type="button" id="button-addon1"
-          (click)="filterIssues()">Filter Issues By Reporter</button>
-      </div>
-  
-  
-      <div class="input-group-prepend" *ngIf="fdate">
-        <button *ngIf="fdate" class="btn btn-outline-secondary" type="button" id="button-addon1"
-          (click)="filterIssues()">Filter Issues By Date</button>
-      </div>
-      <input type="text" *ngIf="ftitle||fstatus||freporter" class="form-control" [(ngModel)]="filterText">
-      
-      <input type="text" *ngIf="fdate" class="form-control" placeholder="Enter date in YYYY-MM-DD format"
-        [(ngModel)]="filterText">
-        <i class="fa fa-window-close" *ngIf="ftitle||fstatus||freporter||fdate" (click)="close()" style="font-size:41px;"></i>
+  <h1>Search results for "{{searchString}}" :</h1>
+  <br> <br>
+
+  <div class="input-group mb-3 mt-3" *ngIf="ftitle||fstatus||freporter||fdate">
+
+    <div class="input-group-prepend" *ngIf="ftitle">
+      <button class="btn btn-outline-secondary" type="button" id="button-addon1" (click)="filterIssues()">Filter Issues
+        By Title</button>
     </div>
-  
-    <div class="table-responsive mt-3">
-      <table class="table table-hover table-bordered">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col" (click)="sortByTitle()">Title <i class='fa fa-caret-square-o-down'></i></th>
-            <th scope="col" (click)="sortByStatus()">Status <i class='fa fa-caret-square-o-down'></i></th>
-            <th scope="col" (click)="sortByReporter()">Reporter <i class='fa fa-caret-square-o-down'></i></th>
-            <th scope="col" (click)="sortByDate()">Date <i class='fa fa-caret-square-o-down'></i></th>
-          </tr>
-        </thead>
-        <tbody>
-  
-          <tr *ngFor="let issue of issueInfo | paginate: { itemsPerPage: 5, currentPage: page } ">
-            <!-- {{issue.issueId}} -->
-            <th scope="row" (click)="show(issue.issueId)">{{issue.title}}</th>
-            <td>{{issue.status}}</td>
-            <td>{{issue.reporterName}}</td>
-            <td>{{issue.creationDateString}}</td>
-          </tr>
-  
-        </tbody>
-      </table>
+
+
+    <div class="input-group-prepend" *ngIf="fstatus">
+      <button *ngIf="fstatus" class="btn btn-outline-secondary" type="button" id="button-addon1"
+        (click)="filterIssues()">Filter Issues By Status</button>
     </div>
-    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+
+
+    <div class="input-group-prepend" *ngIf="freporter">
+      <button *ngIf="freporter" class="btn btn-outline-secondary" type="button" id="button-addon1"
+        (click)="filterIssues()">Filter Issues By Reporter</button>
+    </div>
+
+
+    <div class="input-group-prepend" *ngIf="fdate">
+      <button *ngIf="fdate" class="btn btn-outline-secondary" type="button" id="button-addon1"
+        (click)="filterIssues()">Filter Issues By Date</button>
+    </div>
+    <input type="text" *ngIf="ftitle||fstatus||freporter" class="form-control" [(ngModel)]="filterText">
+
+    <input type="text" *ngIf="fdate" class="form-control" placeholder="Enter date in YYYY-MM-DD format"
+      [(ngModel)]="filterText">
+    <i class="fa fa-window-close" *ngIf="ftitle||fstatus||freporter||fdate" (click)="close()"
+      style="font-size:41px;"></i>
+  </div>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-hover table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col" (click)="sortByTitle()">Title <i class='fa fa-caret-square-o-down'></i></th>
+          <th scope="col" (click)="sortByStatus()">Status <i class='fa fa-caret-square-o-down'></i></th>
+          <th scope="col" (click)="sortByReporter()">Reporter <i class='fa fa-caret-square-o-down'></i></th>
+          <th scope="col" (click)="sortByDate()">Date <i class='fa fa-caret-square-o-down'></i></th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr *ngFor="let issue of issueInfo | paginate: { itemsPerPage: 5, currentPage: page } ">
+
+          <th scope="row" (click)="show(issue.issueId)">{{issue.title}}</th>
+          <td>{{issue.status}}</td>
+          <td>{{issue.reporterName}}</td>
+          <td>{{issue.creationDate | displayDate}}</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+  <pagination-controls (pageChange)="page = $event"></pagination-controls>
 </div>
 
 <div *ngIf=!resultsAvailable class="container ">
-  <h1>Oops! No search results available.</h1>  
+  <h1>Oops! No search results available.</h1>
 </div>
-

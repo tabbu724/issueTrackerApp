@@ -22,29 +22,24 @@ export class DashboardComponent implements OnInit {
   public fdate
   public freporter
   public fstatus
-  public createIssueFlag=false
-  public showIssueFlag=false
+  public createIssueFlag = false
+  public showIssueFlag = false
+  public notifyFlag = false
+  public notify
   public page = 1
-  constructor(private hitApis: ApiService,private socket: SocketService, private toastr: ToastrService, private _router: Router, private cookie: CookieService) {
+  constructor(private hitApis: ApiService, private socket: SocketService, private toastr: ToastrService, private _router: Router, private cookie: CookieService) {
 
   }
 
-formatDate=(response)=>{
-  for (let data of response['data']) {
-    let formattedDate = new Date(data['creationDate']).toDateString()
-    let formattedTime = new Date(data['creationDate']).toLocaleTimeString()
-    let displayDate = `${formattedDate} , ${formattedTime}`
-    let index = response['data'].indexOf(data)
-    response['data'][index]['creationDateString'] = displayDate
-  }
-}
+
 
   viewDashboard = () => {
+    this.notifyFlag = false
     this.hitApis.dashboardInfo(this.authToken).subscribe(
       response => {
         if (response['status'] == 200) {
-          
-          this.formatDate(response)
+
+
 
           this.issueInfo = response['data']
           this.verifyUser()
@@ -67,10 +62,9 @@ formatDate=(response)=>{
       this.toastr.warning('Search field cannot be empty.')
     }
     else {
-      this.hitApis.supplySearchString(this.searchText)
       this.toastr.success('Finding your results.Please wait...');
       setTimeout(() => {
-        this._router.navigate(['/search']);
+        this._router.navigate(['/search', this.searchText]);
       }, 1000);
     }
 
@@ -86,7 +80,6 @@ formatDate=(response)=>{
     this.hitApis.sortByColumns(values, this.authToken).subscribe(
       response => {
         if (response['status'] == 200) {
-          this.formatDate(response)
           this.issueInfo = response['data']
         }
         else {
@@ -109,7 +102,6 @@ formatDate=(response)=>{
     this.hitApis.sortByColumns(values, this.authToken).subscribe(
       response => {
         if (response['status'] == 200) {
-          this.formatDate(response)
           this.issueInfo = response['data']
         }
         else {
@@ -132,7 +124,7 @@ formatDate=(response)=>{
     this.hitApis.sortByColumns(values, this.authToken).subscribe(
       response => {
         if (response['status'] == 200) {
-          this.formatDate(response)
+
           this.issueInfo = response['data']
         }
         else {
@@ -155,7 +147,7 @@ formatDate=(response)=>{
     this.hitApis.sortByColumns(values, this.authToken).subscribe(
       response => {
         if (response['status'] == 200) {
-          this.formatDate(response)
+
           this.issueInfo = response['data']
         }
         else {
@@ -172,9 +164,9 @@ formatDate=(response)=>{
   filterbytitle = () => {
 
     this.ftitle = true
-    this.fdate=false
-this.freporter=false
-this.fstatus=false
+    this.fdate = false
+    this.freporter = false
+    this.fstatus = false
 
   }
 
@@ -184,9 +176,9 @@ this.fstatus=false
         response => {
           if (response['status'] == 200) {
             this.ftitle = false
-            this.filterText=''
+            this.filterText = ''
             this.toastr.success('Filtered the data for you.');
-            this.formatDate(response)
+
             this.issueInfo = response['data']
           }
           else {
@@ -204,9 +196,9 @@ this.fstatus=false
         response => {
           if (response['status'] == 200) {
             this.fstatus = false
-            this.filterText=''
+            this.filterText = ''
             this.toastr.success('Filtered the data for you.');
-            this.formatDate(response)
+
             this.issueInfo = response['data']
           }
           else {
@@ -221,14 +213,12 @@ this.fstatus=false
     }
     else if (this.fdate) {
       let dateToSearch = this.filterText
-      // console.log(dateToSearch);
 
       this.hitApis.filterRowsByDate(dateToSearch, this.authToken).subscribe(
         response => {
           if (response['status'] == 200) {
-            this.formatDate(response)
             this.fdate = false
-            this.filterText=''
+            this.filterText = ''
             this.toastr.success('Filtered the data for you.');
             this.issueInfo = response['data']
 
@@ -248,9 +238,8 @@ this.fstatus=false
         response => {
           if (response['status'] == 200) {
             this.freporter = false
-            this.filterText=''
+            this.filterText = ''
             this.toastr.success('Filtered the data for you.');
-            this.formatDate(response)
             this.issueInfo = response['data']
           }
           else {
@@ -270,8 +259,8 @@ this.fstatus=false
 
     this.fstatus = true
     this.ftitle = false
-    this.fdate=false
-this.freporter=false
+    this.fdate = false
+    this.freporter = false
 
   }
 
@@ -280,7 +269,7 @@ this.freporter=false
     this.fdate = true
     this.fstatus = false
     this.ftitle = false
-this.freporter=false
+    this.freporter = false
   }
 
   filterbyreporter = () => {
@@ -291,38 +280,30 @@ this.freporter=false
     this.ftitle = false
   }
 
-close=()=>{
-  if(this.ftitle){
-    this.ftitle=false
+  close = () => {
+    if (this.ftitle) {
+      this.ftitle = false
+    }
+    else if (this.fstatus) {
+      this.fstatus = false
+    }
+    else if (this.freporter) {
+      this.freporter = false
+    }
+    else if (this.fdate) {
+      this.fdate = false
+    }
   }
-  else if(this.fstatus){
-    this.fstatus=false
-  }
-  else if(this.freporter){
-    this.freporter=false
-  }
-  else if(this.fdate){
-    this.fdate=false
-  }
-}
 
-setCreateIssueFlag=()=>{
-  // this.createIssueFlag=true
-  console.log('create issue set by dashboard');
-  
-this.hitApis.receiveIssueDescriptionFlags('createIssueFlag')
-setTimeout(() => {
-  this._router.navigate(['/issueDescription']);
-}, 1000);
-}
+  setCreateIssueFlag = () => {
+
+    setTimeout(() => {
+      this._router.navigate(['/issueDescription', 'ReportBug']);
+    }, 1000);
+  }
 
 
-setShowIssueFlag=()=>{
-  console.log('show issue set by dashboard');
-  
-  // this.showIssueFlag=true
-  this.hitApis.receiveIssueDescriptionFlags('showIssueFlag')
-}
+
 
   logout = () => {
     this.hitApis.logout(this.authToken).subscribe(
@@ -347,77 +328,89 @@ setShowIssueFlag=()=>{
   }
 
   show = (issueId) => {
-    // console.log('issueId', issueId);
-    this.hitApis.getIssueId(issueId)
-    this.setShowIssueFlag()
+
     this.toastr.success('Fetching Details.Please wait...');
     setTimeout(() => {
-      this._router.navigate(['/issueDescription']);
+      this._router.navigate(['/issueDescription', issueId]);
     }, 1000);
   }
 
-// socket related
+  // socket related
 
-verifyUser=()=>{
-  this.socket.verifyUser().subscribe(
-    (data) => {
-      // this.connDisconnected = false;
-      this.socket.setUser(this.authToken);
-      this.receiveError()
-      // this.onlineUserList();
-    },
-    (err) => {
-      this.socket.errorHandler(err);
-    }
-  )
-}
+  verifyUser = () => {
+    this.socket.verifyUser().subscribe(
+      (data) => {
+        this.socket.setUser(this.authToken);
+        this.receiveError()
 
-receiveError=()=>{
-  this.socket.receiveError().subscribe(
-    (data) => {
-      // this.connDisconnected = false;
-      console.log(data);
-      this.toastr.warning(data)
-      // this.onlineUserList();
-    },
-    (err) => {
-      this.socket.errorHandler(err);
-    }
-  )
-}
+      },
+      (err) => {
+        this.socket.errorHandler(err);
+      }
+    )
+  }
 
-makeUserOnline=()=>{
-  this.socket.makeUserOnline().subscribe(
-    (data) => {
-      // this.connDisconnected = false;
-      console.log(data);
-      
-      // this.onlineUserList();
-    },
-    (err) => {
-      this.socket.errorHandler(err);
-    }
-  )
-}
+  receiveError = () => {
+    this.socket.receiveError().subscribe(
+      (data) => {
+        this.toastr.warning(data)
+      },
+      (err) => {
+        this.socket.errorHandler(err);
+      }
+    )
+  }
 
-receiveNotifications=()=>{
-  this.socket.receiveNotifications(this.userId).subscribe(
-    (data) => {
-      // this.connDisconnected = false;
-      console.log(data);
-      this.toastr.warning(data,'notification')
-      // this.onlineUserList();
-    },
-    (err) => {
-      this.socket.errorHandler(err);
-    }
-  )
-}
+  makeUserOnline = () => {
+    this.socket.makeUserOnline().subscribe(
+      (data) => {
+      },
+      (err) => {
+        this.socket.errorHandler(err);
+      }
+    )
+  }
 
-disconnect=()=>{
-  this.socket.exitSocket()
-  
-}
+  receiveNotifications = () => {
+    this.socket.receiveNotifications(this.userId).subscribe(
+      (data) => {
+        this.toastr.info(data.msg, 'notification')
+      },
+      (err) => {
+        this.socket.errorHandler(err);
+      }
+    )
+  }
+
+  notificationHistory = () => {
+    this.hitApis.notificationHistory(this.authToken, this.userId).subscribe(
+      response => {
+        if (response['status'] == 200) {
+          this.notifyFlag = true
+          this.toastr.success('Getting your notification history')
+          this.notify = response['data']
+        }
+        else {
+          this.toastr.error(response['message']);
+        }
+      },
+      error => {
+        let message = this.hitApis.handleError(error);
+        this.toastr.error(message)
+      }
+    )
+  }
+
+  goToIssue = (issueId) => {
+    setTimeout(() => {
+      this._router.navigate(['/issueDescription', issueId]);
+    }, 1000);
+  }
+
+  disconnect = () => {
+    this.socket.exitSocket()
+
+  }
 
   ngOnInit() {
     this.userName = this.cookie.get('userName')

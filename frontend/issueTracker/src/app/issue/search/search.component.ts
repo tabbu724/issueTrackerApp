@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie';
 import { ToastrService } from "ngx-toastr";
 import { ApiService } from 'src/app/api.service';
@@ -22,11 +22,11 @@ export class SearchComponent implements OnInit {
   public freporter
   public fstatus
   public page = 1
-  constructor(private hitApis: ApiService, private toastr: ToastrService, private _router: Router, private cookie: CookieService) {
+  constructor(private hitApis: ApiService, private aroute: ActivatedRoute, private toastr: ToastrService, private _router: Router, private cookie: CookieService) {
 
   }
 
-  formatDate=(response)=>{
+  formatDate = (response) => {
     for (let data of response['data']) {
       let formattedDate = new Date(data['creationDate']).toDateString()
       let formattedTime = new Date(data['creationDate']).toLocaleTimeString()
@@ -37,7 +37,7 @@ export class SearchComponent implements OnInit {
   }
 
   viewSearchResult = () => {
-    this.hitApis.search(this.authToken).subscribe(
+    this.hitApis.search(this.authToken, this.searchString).subscribe(
       response => {
         if (response['status'] == 200) {
           this.resultsAvailable = true
@@ -203,7 +203,7 @@ export class SearchComponent implements OnInit {
     }
     else if (this.fdate) {
       let dateToSearch = this.filterText
-      // console.log(dateToSearch);
+
 
       this.hitApis.filterRowsByDateSearchView(dateToSearch, this.authToken).subscribe(
         response => {
@@ -265,20 +265,15 @@ export class SearchComponent implements OnInit {
     this.freporter = false
   }
 
-  setShowIssueFlag=()=>{
-    console.log('show issue set by dashboard');
-    
-    // this.showIssueFlag=true
+  setShowIssueFlag = () => {
     this.hitApis.receiveIssueDescriptionFlags('showIssueFlag')
   }
 
   show = (issueId) => {
-    // console.log('issueId', issueId);
-    this.hitApis.getIssueId(issueId)
-    this.setShowIssueFlag()
+
     this.toastr.success('Fetching Details.Please wait...');
     setTimeout(() => {
-      this._router.navigate(['/issueDescription']);
+      this._router.navigate(['/issueDescription', issueId]);
     }, 1000);
   }
 
@@ -330,7 +325,7 @@ export class SearchComponent implements OnInit {
     this.userName = this.cookie.get('userName')
     this.userId = this.cookie.get('userId')
     this.authToken = this.cookie.get('authToken')
-    this.searchString=this.hitApis.sendSearchString()
+    this.searchString = this.aroute.snapshot.paramMap.get('text')
     this.viewSearchResult()
   }
 

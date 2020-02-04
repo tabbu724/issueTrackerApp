@@ -33,7 +33,7 @@ jwt.verify(token,secret,(err,decoded)=>{
     }
     else{
         console.log('user verified');
-        console.log(decoded);
+        // console.log(decoded);
         cb(null,decoded)
     }
 })
@@ -47,6 +47,8 @@ let verifyClaimWithoutSecret = (token,cb)=>{
         }
         else{
             console.log('token verified');
+            // console.log(decoded);
+            
             cb(null,decoded)
         }
     })

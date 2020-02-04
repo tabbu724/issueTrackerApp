@@ -1,218 +1,258 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-secondary mb-4 sticky-top">
-    <a class="navbar-brand">Issue Tracker</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+  <a class="navbar-brand" [routerLink]="['/dashboard']">Issue Tracker</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-        <ul class="navbar-nav ">
-            
-            <li class="nav-item">
-                <a class="nav-link" (click)="logout()">LogOut</a>
-            </li>
-        </ul>
-    </div>
+  <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+    <ul class="navbar-nav ">
+
+      <li class="nav-item">
+        <a class="nav-link" (click)="logout()">LogOut&nbsp;<i class="fa fa-sign-out" aria-hidden="true"></i></a>
+      </li>
+    </ul>
+  </div>
 </nav>
 
 <div class="container " *ngIf="showIssueFlag">
-    <h1>These are the issue details you needed.</h1>
-    <!-- style="width: 18rem;" -->
-    <div class="card mb-4" >
-      <!-- <img src="..." class="card-img-top" alt="..."> -->
-      <div class="card-body">
+  <h1>These are the issue details you needed.</h1>
+
+  <div class="card mb-4">
+    <button type="button" class="btn btn-dark text-right" [hidden]="editFlag==true" (click)="setEditFlag()">Edit
+      &nbsp;<i class="fa fa-pencil" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-dark text-right" [hidden]="editFlag==false" (click)="edit()">Go&nbsp;<i
+        class="fa fa-bolt" aria-hidden="true"></i>
+    </button>
+    <div class="card-body">
+      <div class="input-group mb-3 ">
+
+        <label for="title" class="col-sm-2 col-form-label">Issue Title</label>
+        <input [hidden]="editFlag==true" type="text" readonly class="form-control-plaintext" id="staticTitle"
+          value={{title}} aria-describedby="button-addon2">
+
+        <input [hidden]="editFlag==false" type="text" class="form-control" [(ngModel)]="newtitle" name="newtitle"
+          value={{title}}>
+
+      </div>
+
+      <div class="input-group mb-3 ">
+
+        <label for="description" class="col-sm-2 col-form-label">Issue Description</label>
+        <!-- <input  [hidden]="editFlag==true" type="text" readonly class="form-control-plaintext"  value={{description}} aria-describedby="button-addon2"> -->
+        <angular-editor [config]="config" name="editor" [(ngModel)]="description"></angular-editor>
+        <!-- <angular-editor [hidden]="editFlag==false" [config]="config"  [(ngModel)]="newdescription" name="newdescription"></angular-editor> -->
+        <!-- <input [hidden]="editFlag==false" type="text" class="form-control"  [(ngModel)]="newdescription" name="newdescription" value={{description}}> -->
+
+      </div>
+
+      <div class="input-group mb-3 ">
+
+        <label for="status" class="col-sm-2 col-form-label">Issue status</label>
+        <input [hidden]="editFlag==true" type="text" readonly class="form-control-plaintext" value={{status}}
+          aria-describedby="button-addon2">
+
+
+        <!-- <input [hidden]="editFlag==false" type="text" class="form-control"  [(ngModel)]="newstatus" value={{status}} name="newstatus"> -->
+
+        <select [hidden]="editFlag==false" class="form-control" [(ngModel)]="newstatus" name="newstatus"
+          value={{status}}>
+          <option>backlog</option>
+          <option>in-progress</option>
+          <option>in-test</option>
+          <option>done</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-dark text-right" [hidden]="editAssigneeFlag==true"
+      (click)="setAssigneeFlag()">Edit&nbsp;<i class="fa fa-pencil" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-dark text-right" [hidden]="editAssigneeFlag==false"
+      (click)="updateAssignee()">Go&nbsp;<i class="fa fa-bolt" aria-hidden="true"></i>
+    </button>
+    <div class="card-body">
+      <div class="input-group mb-3 ">
+
+        <label for="assigneeName" class="col-sm-2 col-form-label">Issue Assignee</label>
+        <input [hidden]="editAssigneeFlag==true" type="text" readonly class="form-control-plaintext"
+          value={{assigneeName}}>
+
+        <input [hidden]="editAssigneeFlag==false" type="text" class="form-control" [(ngModel)]="newassigneeName"
+          name="newassigneeName" value={{assigneeName}}>
+
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-dark text-right" [hidden]="editAttachmentFlag==true"
+      (click)="setAttachmentFlag()">Add Attachment&nbsp;
+      <i class="fa fa-paperclip" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-dark text-right" [hidden]="editAttachmentFlag==false"
+      (click)="edit()">Go&nbsp;<i class="fa fa-bolt" aria-hidden="true"></i>
+    </button>
+    <div class="card-body">
+      <div class="input-group mb-3 " [hidden]="editAttachmentFlag==true">
+
+        <label for="attachments" class="col-sm-2 col-form-label">Issue Attachments</label>
+        <p *ngIf="attachments.length==0">
+          Not Available</p>
+        <div *ngFor="let fileData of attachments">
+          <a href="{{fileData.fileUrl}}"> {{fileData.filename}} </a>
+          &nbsp;
+
+        </div>
+
+
+      </div>
+      <div class="input-group" [hidden]="editAttachmentFlag==false">
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="inputGroupFile04" (change)="fileChange($event)"
+            aria-describedby="inputGroupFileAddon04">
+          <label class="custom-file-label" for="inputGroupFile04"></label>
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- <hr> -->
+
+    <div class="p-3 mb-2 bg-dark rounded" style="height: 37px;"></div>
+    <div class="card-body">
+      <div class="input-group mb-3 ">
+
+        <label for="issueDate" class="col-sm-2 col-form-label">Issue Date</label>
+        <p>{{issueDate | displayDate}}</p>
+        <!-- <input type="text" readonly class="form-control-plaintext"  value={{issueDate | displayDate}} aria-describedby="button-addon2"> -->
+
+      </div>
+    </div>
+
+    <!-- watcher -->
+    <div class="p-3 mb-2 bg-dark rounded" style="height: 37px;"></div>
+    <div class="card-body">
+      <!-- <button class="card-link" (click)="createComment()">Comment</button> -->
+      <button class="card-link btn btn-primary" (click)="addWatcher()">Be a Watcher&nbsp;<i class="fa fa-eye"
+          aria-hidden="true"></i></button>
+      <a href="#watchers" class="card-link btn btn-primary" data-toggle="collapse" data-target="#watchers" aria-expanded="false"
+        (click)="showWatchers()">Show Watchers &nbsp;<i class="fa fa-list" aria-hidden="true"></i>
+      </a>
+    </div>
+
+
+    <div class="collapse" id="watchers">
+      <div class="card card-body" *ngFor="let watcher of watcherData">
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            <div class="input-group mb-3 ">
-  
-              <label for="title" class="col-sm-2 col-form-label">Issue Title</label>
-              <input type="text" readonly class="form-control-plaintext" id="staticTitle" value={{title}} aria-describedby="button-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="editTitles()">Edit </button>
-              </div>
-
-              <input *ngIf="editTitle" type="text" class="form-control"  [(ngModel)]="newtitle" aria-describedby="button-addon2">
-              <div class="input-group-append" *ngIf="editTitle">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="edit()">Update </button>
-              </div>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="input-group mb-3 ">
-  
-              <label for="description" class="col-sm-2 col-form-label">Issue Description</label>
-              <input type="text" readonly class="form-control-plaintext"  value={{description}} aria-describedby="button-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="editDescriptions()">Edit </button>
-              </div>
-
-              <input *ngIf="editDescription" type="text" class="form-control"  [(ngModel)]="newdescription" aria-describedby="button-addon2">
-              <div class="input-group-append" *ngIf="editDescription">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="edit()">Update </button>
-              </div>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="input-group mb-3 ">
-  
-              <label for="status" class="col-sm-2 col-form-label">Issue status</label>
-              <input type="text" readonly class="form-control-plaintext"  value={{status}} aria-describedby="button-addon2">
-              
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="editStatuses()">Edit </button>
-              </div>
-
-              <input *ngIf="editStatus" type="text" class="form-control"  [(ngModel)]="newstatus" aria-describedby="button-addon2">
-              <div class="input-group-append" *ngIf="editStatus">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="edit()">Update </button>
-              </div>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="input-group mb-3 ">
-  
-              <label for="assigneeName" class="col-sm-2 col-form-label">Issue Assignee</label>
-              <input type="text" readonly class="form-control-plaintext"  value={{assigneeName}} aria-describedby="button-addon2">
-              
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="editAssignees()">Edit </button>
-              </div>
-
-              <input *ngIf="editAssignee" type="text" class="form-control"  [(ngModel)]="newassigneeName" aria-describedby="button-addon2">
-              <div class="input-group-append" *ngIf="editAssignee">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="edit()">Update </button>
-              </div>
-            </div>
-          </li>
-          
-          <li class="list-group-item" *ngIf="attachments.length!=0">
-            <div class="input-group mb-3 ">
-  
-              <label for="attachments" class="col-sm-2 col-form-label">Issue Attachments</label>
-              <div *ngFor="let fileData of attachments">
-                <a  href="{{fileData.fileUrl}}">{{fileData.filename}}</a>
-                <!-- <input type="text" readonly class="form-control-plaintext"  value={{fileData.fileName}} aria-describedby="button-addon2">
-                <input type="text" readonly class="form-control-plaintext"  value={{fileData.fileUrl}} aria-describedby="button-addon2"> -->
-              </div>
-              
-              <!-- <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Add </button>
-              </div> -->
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="input-group mb-3 ">
-  
-              <label for="issueDate" class="col-sm-2 col-form-label">Issue Date</label>
-              <input type="text" readonly class="form-control-plaintext"  value={{issueDate}} aria-describedby="button-addon2">
-              
-            </div>
-          </li>
-
-          <li class="list-group-item">
-            <div class="input-group mb-3 ">
-  
-              <label for="comment" class="col-sm-2 col-form-label">Write Comment</label>
-              <input type="text"  class="form-control" name="comment"  [(ngModel)]="comment" aria-describedby="button-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="createComment()">Comment </button>
-              </div>
-            </div>
+            {{watcher}}
           </li>
         </ul>
-      </div>
-      
-      <div class="card-body">
-        <!-- <button class="card-link" (click)="createComment()">Comment</button> -->
-        <button class="card-link btn btn-primary" (click)="addWatcher()">Be a Watcher</button>
-        <a href="#watchers" class="card-link" data-toggle="collapse" aria-expanded="false" (click)="showWatchers()" >Show Watchers</a>
-      </div>
 
-      <!-- <p>
-        <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-          Link with href
-        </a>
-        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-          Button with data-target
-        </button>
-      </p> -->
-      <div class="collapse" id="watchers">
-        <div class="card card-body" *ngFor="let watcher of watcherData">
-          <ul class="list-group list-group-flush"><li class="list-group-item">
-            {{watcher}}
-          </li></ul> 
-          
-        </div>
       </div>
-<!--show  comments -->
-<div class="card">
-  
-  <div class="card-body" *ngFor="let comment of allComments">
-    <blockquote class="blockquote mb-0">
-      <p>{{comment.comment}}</p>
-      <footer class="blockquote-footer">posted at -<cite title="Source Title">{{comment.commentDate}}</cite></footer>
-      <footer class="blockquote-footer">posted by -<cite title="Source Title">{{comment.userName}}</cite></footer>
-    </blockquote>
-  </div>
-</div>
     </div>
-    
-    
+
+
+    <div class="p-3 mb-2 bg-dark rounded text-white" style="height: 37px;">Comment Section</div>
+    <div class="card-body">
+      <div class="input-group mb-3 ">
+
+        <label for="comment" class="col-sm-2 col-form-label">Write Comment</label>
+
+        <input type="text" class="form-control" name="comment" [(ngModel)]="comment" aria-describedby="button-addon2">
+        &nbsp; &nbsp;<button type="button" class="card-link btn btn-dark text-right" (click)="createComment()"
+          style="height:40px">Comment&nbsp;<i class="fa fa-comment" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+
+
+
+    <!--show  comments -->
+    <div class="card">
+
+      <div class="card-body">
+        <blockquote class="blockquote mb-0" *ngFor="let comment of allComments">
+          <p>{{comment['comment']}}</p>
+          <!-- <footer class="blockquote-footer">posted at -<cite title="Source Title">{{comment['commentDate'] | displayDate}}</cite></footer> -->
+          <footer class="blockquote-footer">posted by <cite title="Source Title">{{comment['userName']}} on
+              {{comment['commentDate'] | displayDate}}</cite></footer>
+          <hr>
+        </blockquote>
+      </div>
+    </div>
+
+
+  </div>
+
+
 </div>
 
+
+<!-- report bug div -->
 <div class="container mb-4" *ngIf="createIssueFlag">
   <h1>Fill these details to report a bug.</h1>
   <form #createIssueForm="ngForm" (ngSubmit)="createIssue()">
 
     <div class="form-group">
-        <label for="Title">Issue Title</label>
-        <input type="text" id="Title" class="form-control" name="Title" placeholder="Enter title of the issue." [(ngModel)]="title" autofocus required>
+      <label for="Title">Issue Title</label>
+      <input type="text" id="Title" class="form-control" name="Title" placeholder="Enter title of the issue."
+        [(ngModel)]="title" autofocus required>
     </div>
 
-    
-<!-- add rich text editor here -->
+
+    <!-- add rich text editor here -->
     <div class="form-group">
-        <label for="editor">Issue Description</label>
-        <angular-editor name="editor" [config]="config" [(ngModel)]="htmlContent" >Issue Description</angular-editor>
+      <label for="editor">Issue Description</label>
+      <angular-editor name="editor" [config]="config" [(ngModel)]="htmlContent">Issue Description</angular-editor>
 
     </div>
 
-    
+
 
     <div class="form-group">
       <label for="Assignee">Assignee</label>
       <input type="text" class="form-control" name="Assignee" id="Assignee" [(ngModel)]="assigneeName" required>
-  </div>
+    </div>
 
-  <div class="custom-file">
-    <input type="file" class="custom-file-input" id="validatedCustomFile" name="Attachment" [(ngModel)]="attachmentString" >
-    <label class="custom-file-label" for="validatedCustomFile">Add Attachment</label>
-    <!-- <div class="invalid-feedback">Example invalid custom file feedback</div> -->
-  </div>
+    <!-- <div class="custom-file">
+    
+    <input type="file" (change)="fileChange($event)" class="custom-file-input" id="validatedCustomFile" placeholder="Add Attachment" >
+    
+    
+  </div> -->
+    <!--  -->
+    <label for="Assignee">Attach files</label>
+    <div class="input-group">
+      
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" id="inputGroupFile04" (change)="fileChange($event)"
+          aria-describedby="inputGroupFileAddon04">
+        <label class="custom-file-label" for="inputGroupFile04"></label>
+      </div>
 
-    <!-- <div class="form-group">
-      <label for="Attachment">Add Attachment</label>
-      <input type="file" class="form-control-file" name="Attachment" [(ngModel)]="attachmentString">
-    </div> -->
+    </div>
+
+
+
+    <br>
 
     <div class="form-group custom-file">
       <label for="Status">Choose Status</label>
-      <select  class="form-control" id="Status" [(ngModel)]="status" name="status" required>
-        <!-- <option>backlog</option> -->
+      <select class="form-control" id="Status" [(ngModel)]="status" name="status" required>
+
         <option>in-progress</option>
         <option>in-test</option>
-        <!-- <option>done</option> -->
-      </select >
+
+      </select>
     </div>
-
+    <br><br>
     <button type="submit" class="btn btn-success btn-lg btn-block">Report Bug</button>
-    
-</form>
-  
-  
-  
+
+  </form>
+
+
+
 </div>
-
-<!-- <div class="container mb-4 " > -->
-
-

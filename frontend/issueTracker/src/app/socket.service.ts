@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpParams,HttpErrorResponse,HttpClient } from "@angular/common/http";
-import io  from "socket.io-client";
+import { HttpParams, HttpErrorResponse, HttpClient } from "@angular/common/http";
+import io from "socket.io-client";
 import { CookieService } from 'ngx-cookie';
 import { Observable } from 'rxjs';
 
@@ -10,13 +10,13 @@ import { Observable } from 'rxjs';
 })
 export class SocketService {
   // for local
-  // public url = 'http://localhost:3004'; 
+  // public url = 'http://localhost:3004';
   // for nginx
   public url = 'http://api.showcasemyskills.xyz';
-  public authToken=this.cookie.get('authToken');
-  public userId=this.cookie.get('userId');
+  public authToken = this.cookie.get('authToken');
+  public userId = this.cookie.get('userId');
   public socket;
-  constructor(private http:HttpClient,private cookie:CookieService) {
+  constructor(private http: HttpClient, private cookie: CookieService) {
     // initial connection setup through handshake
     this.socket = io(this.url);
   }
@@ -31,14 +31,14 @@ export class SocketService {
     });//end observable
   }//end verifyUser
 
-  public receiveError=()=>{
+  public receiveError = () => {
     return Observable.create((observer) => {
       this.socket.on('auth-err', (err) => {
         observer.next(err);
       });//end socket
     });//end observable
   }//end verifyUser
-  
+
   public makeUserOnline = () => {
     return Observable.create((observer) => {
       this.socket.on('online-status', (msg) => {
@@ -73,13 +73,11 @@ export class SocketService {
     this.socket.emit('issueUpdated', updatedDetails);
   }
 
-  public exitSocket=()=>{
+  public exitSocket = () => {
     this.socket.disconnect();
   }
 
-// public logout=()=>{
-//   return this.http.post(`${this.url}/api/v1/users/logout?authToken=${this.authToken}`,this.userId);
-// }
+
 
   //error handler
 
@@ -91,7 +89,6 @@ export class SocketService {
     else {
       errMessage = `Server returned the code: ${err.status} with error mesaage : ${err.message}`;
     }
-    console.error(errMessage);
     return Observable.throw(errMessage);
   }//end error handler
 

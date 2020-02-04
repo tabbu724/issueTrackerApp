@@ -5,10 +5,6 @@ const issueModel = require('../models/issueDetails')
     , userModel = require('../models/user')
     , timeLib = require('../libraries/dateTimeLib')
     , redisLib = require('../libraries/redisLib')
-    , socketLib = require('../libraries/socketLib')
-    , serverInstance = require('../../index')
-    , event = require('events')
-    , eventEmitter = new event.EventEmitter()
 
 let issueDescriptionViewInfo = (req, res) => {
     issueModel.findOne({ issueId: req.params.issueId }, (err, issueInfo) => {
@@ -29,11 +25,11 @@ let issueDescriptionViewInfo = (req, res) => {
 
 
 let editIssueDetails = (req, res) => {
-    if(req.body.title==undefined||req.body.issueId==undefined||req.body.description||req.body.status){
+    if (req.body.issueId == undefined) {
         let response = responseLib.formatResponse(true, 'Some required parameters are missing.', 500, null)
-            res.send(response);
+        res.send(response);
     }
-    else{
+    else {
         issueModel.findOne({ issueId: req.body.issueId }, (err, issueDetails) => {
 
             if (err) {
@@ -45,17 +41,18 @@ let editIssueDetails = (req, res) => {
                 res.send(response)
             }
             else {
-    
+
                 let flags = {
                     attachment: 0,
                     title: 0,
                     description: 0,
                     status: 0
                 }
-                // console.log(req.attachments);
-    
-                if (req.attachments.length != 0) {
+
+
+                if (req.attachments != undefined && req.attachments.length != 0) {
                     req.attachments.forEach(fileObject => {
+
                         issueDetails.attachmentUrls.push(fileObject)
                     });
                     flags.attachment = 1
@@ -72,7 +69,7 @@ let editIssueDetails = (req, res) => {
                     issueDetails.status = req.body.status
                     flags.status = 1
                 }
-    
+
                 issueDetails.save((err, updatedDetails) => {
                     if (err) {
                         let response = responseLib.formatResponse(true, err.message, 500, null)
@@ -80,33 +77,35 @@ let editIssueDetails = (req, res) => {
                     }
                     else {
                         let updatedWithFlags = updatedDetails.toObject()
-                        // console.log(updatedWithFlags);
-    
+
+
                         updatedWithFlags.flags = flags
                         let response = responseLib.formatResponse(false, 'Issue details updated successfully.', 200, updatedWithFlags)
-    
-    
-    
-    
+
+
+
+
                         res.send(response)
                     }
                 })
-    
+
             }
         })
     }
-   
+
 }
 
 let assignIssueToOthers = (req, res) => {
-    if(req.body.assigneeUsername==undefined||req.body.issueId==undefined){
+
+    if (req.body.assigneeUsername == undefined || req.body.issueId == undefined) {
         let response = responseLib.formatResponse(true, 'Some required parameters are missing.', 500, null)
-            res.send(response);
+        res.send(response);
     }
-    else{
+    else {
         userModel.findOne({ userName: req.body.assigneeUsername }, (err, userData) => {
+
             if (err) {
-                console.log(err);
+
             }
             else if (checkLib.isEmpty(userData)) {
                 let response = responseLib.formatResponse(true, 'Issue cannot be assigned to this assignee as no such user exists', 404, null)
@@ -114,9 +113,11 @@ let assignIssueToOthers = (req, res) => {
             }
             else {
                 let newAssigneeInfo = {
-                    assigneeId: userData.userId
+                    assigneeName: userData.userName
                 }
                 issueModel.updateOne({ issueId: req.body.issueId }, newAssigneeInfo, (err, updatedDetails) => {
+
+
                     if (err) {
                         let response = responseLib.formatResponse(true, err.message, 500, null)
                         res.send(response);
@@ -126,7 +127,7 @@ let assignIssueToOthers = (req, res) => {
                         res.send(response);
                     }
                     else {
-                        updatedDetails.notifyMsg = `Issue with id : ${req.body.issueId} has been assigned to ${req.body.username}.`
+                        updatedDetails.notifyMsg = `Issue with id : ${req.body.issueId} has been assigned to ${req.body.assigneeUsername}.`
                         let response = responseLib.formatResponse(false, 'Assignee updated successfully.', 200, updatedDetails)
                         res.send(response)
                     }
@@ -134,22 +135,22 @@ let assignIssueToOthers = (req, res) => {
             }
         })
     }
-    
+
 }
 
 let commentOnIssue = (req, res) => {
     // check if issueid and userid exist
     let commentId = shortid.generate()
-    if(req.body.comment==undefined||req.body.username==undefined||req.body.issueId==undefined){
+    if (req.body.comment == undefined || req.body.username == undefined || req.body.issueId == undefined) {
         let response = responseLib.formatResponse(true, 'Some required parameters are missing.', 500, null)
-            res.send(response);
+        res.send(response);
     }
-    else{
+    else {
         let commentDetails = {
             comment: req.body.comment,
             userName: req.body.username,
             commentDate: timeLib.now()
-            }
+        }
         redisLib.createHash(req.body.issueId + '{Comment-list}', commentId, JSON.stringify(commentDetails), (err, commentCreationStatus) => {
             if (err) {
                 let response = responseLib.formatResponse(true, err.message, 500, null)
@@ -170,29 +171,34 @@ let commentOnIssue = (req, res) => {
                         res.send(response);
                     }
                     else {
-    
-                        // console.log('created commentInfo-> ',JSON.parse(commentData[commentId]));
-    
-                        let commentObject = JSON.parse(commentData)
-    
+
+
+                        let commentArray = Object.values(commentData)
+                        let displayComment = []
+                        for (let comment of commentArray) {
+                            displayComment.push(JSON.parse(comment))
+                        }
+
+                        let commentObject = {}
+                        commentObject['allComments'] = displayComment
                         commentObject['notifyMsg'] = `${req.body.username} commented on issue with id : ${req.body.issueId} .`
                         let response = responseLib.formatResponse(false, 'comment created successfully.', 200, commentObject)
                         res.send(response)
                     }
                 })
-    
+
             }
         })
     }
-   
+
 }
 
 let addWatcher = (req, res) => {
-if(req.body.issueId==undefined||  req.body.userId==undefined||  req.body.userName==undefined){
-    let response = responseLib.formatResponse(true, 'Some required parameters are missing', 500, null)
-            res.send(response);
-}
-    else{
+    if (req.body.issueId == undefined || req.body.userId == undefined || req.body.userName == undefined) {
+        let response = responseLib.formatResponse(true, 'Some required parameters are missing', 500, null)
+        res.send(response);
+    }
+    else {
         redisLib.createHash(req.body.issueId + '{Watcher-list}', req.body.userId, req.body.userName, (err, additionStatus) => {
             if (err) {
                 let response = responseLib.formatResponse(true, err.message, 500, null)
@@ -203,7 +209,7 @@ if(req.body.issueId==undefined||  req.body.userId==undefined||  req.body.userNam
                 res.send(response);
             }
             else {
-                console.log(typeof additionStatus);
+
                 let details = {
                     additionStatus: additionStatus,
                     notifyMsg: `${req.body.userName} is a watcher to issue with issue id :${req.body.issueId}. `
@@ -216,11 +222,11 @@ if(req.body.issueId==undefined||  req.body.userId==undefined||  req.body.userNam
 }
 
 let listAllWatcher = (req, res) => {
-    if(req.body.issueId==undefined){
+    if (req.params.issueId == undefined) {
         let response = responseLib.formatResponse(true, 'Some required parameters are missing', 500, null)
-                res.send(response);
+        res.send(response);
     }
-    else{
+    else {
         redisLib.showHash(req.params.issueId + '{Watcher-list}', (err, watcherInfo) => {
             if (err) {
                 let response = responseLib.formatResponse(true, err.message, 500, null)
@@ -228,15 +234,46 @@ let listAllWatcher = (req, res) => {
             }
             else if (checkLib.isEmpty(watcherInfo)) {
                 let response = responseLib.formatResponse(true, 'No watcher details available.', 404, null)
+
                 res.send(response);
+
             }
             else {
                 let response = responseLib.formatResponse(false, 'All watchers are available .', 200, watcherInfo)
+
                 res.send(response)
             }
         })
     }
-    
+
+}
+
+let showComments = (req, res) => {
+    redisLib.showHash(req.params.issueId + '{Comment-list}', (err, commentData) => {
+        if (err) {
+            let response = responseLib.formatResponse(true, err.message, 500, null)
+            res.send(response);
+        }
+        else if (checkLib.isEmpty(commentData)) {
+            let response = responseLib.formatResponse(true, 'No comment details available.', 404, null)
+            res.send(response);
+        }
+        else {
+
+
+            let commentArray = Object.values(commentData)
+            let displayComment = []
+            for (let comment of commentArray) {
+                displayComment.push(JSON.parse(comment))
+            }
+
+            let commentObject = {}
+            commentObject['allComments'] = displayComment
+
+            let response = responseLib.formatResponse(false, 'comment created successfully.', 200, commentObject)
+            res.send(response)
+        }
+    })
 }
 
 module.exports = {
@@ -245,5 +282,6 @@ module.exports = {
     assignIssueToOthers: assignIssueToOthers,
     commentOnIssue: commentOnIssue,
     addWatcher: addWatcher,
-    listAllWatcher: listAllWatcher
+    listAllWatcher: listAllWatcher,
+    showComments: showComments
 }

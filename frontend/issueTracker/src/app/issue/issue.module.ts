@@ -11,8 +11,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FormsModule } from "@angular/forms";
 import { NgxPaginationModule } from 'ngx-pagination';
 import { AngularEditorModule } from "@kolkov/angular-editor";
-import {  } from "@angular/compiler";
-
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
   declarations: [SearchComponent, IssueDescriptionComponent],
@@ -24,11 +23,12 @@ import {  } from "@angular/compiler";
     BrowserModule,
     NgxPaginationModule,
     AngularEditorModule,
+    SharedModule,
     CookieModule.forChild(),
     ToastrModule.forRoot(),
     RouterModule.forChild([
-      {path:'search',component:SearchComponent},
-      {path:'issueDescription',component:IssueDescriptionComponent}
+      {path:'search/:text',component:SearchComponent},
+      {path:'issueDescription/:view',component:IssueDescriptionComponent}
     ])
   ]
   

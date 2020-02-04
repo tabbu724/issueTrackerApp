@@ -21,10 +21,11 @@
 
         <div class="form-group">
             <label for="usernameEmail">Email/Username</label>
-            <input type="email" id="e-mail" class="form-control" name="usernameEmail" placeholder="Enter your username or email id." [(ngModel)]="usernameEmail" autofocus required>
+            <input type="email" id="e-mail" class="form-control" name="usernameEmail"
+                placeholder="Enter your username or email id." [(ngModel)]="usernameEmail" autofocus required>
         </div>
 
-        
+
 
         <div class="form-group">
             <label for="pwd">Password</label>
@@ -32,18 +33,17 @@
         </div>
 
         <button type="submit" class="btn btn-success btn-lg btn-block">Log In</button>
-        
+
     </form>
     <br>
-    
+
     <br>
-    
+
     <div class="row">
-<!-- <a href="api/v1/app/auth/facebook"> -->
-    <div class="col-md-6 col-sm-6 col-6 text-right" ><i class="fa fa-facebook-official" style="font-size:48px;" (click)="loginViaFb()" ></i></div>
-<!-- </a>  -->
-<div class="col-md-6 col-sm-6 col-6" ><i class="fa fa-google" style="font-size:48px;"></i></div>
+        <div class="col-md-6 col-sm-6 col-6 text-right"><i class="fa fa-facebook-official" style="font-size:48px;"
+                (click)="loginViaFb()"></i></div>
+
+        <div class="col-md-6 col-sm-6 col-6"><i class="fa fa-google" style="font-size:48px;"
+                (click)="loginViaGoogle()"></i></div>
     </div>
 </div>
-
-<!-- (click)="loginViaFb()" -->
