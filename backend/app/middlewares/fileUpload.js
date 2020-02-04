@@ -1,6 +1,6 @@
 const aws = require('aws-sdk')
     , config = require('../../config/appConfig')
-,encryptLib=require('../libraries/encryptLib')
+    , encryptLib = require('../libraries/encryptLib')
 let fileUploader = (req, res, next) => {
     let s3Bucket = new aws.S3({
         accessKeyId: encryptLib.decodeData(config.configuration.AWS_ACCESS_KEY_ID),
@@ -19,18 +19,18 @@ let fileUploader = (req, res, next) => {
                 }
                 else {
 
-let dataObject={
-    fileName:data.Key.split('/')[1],
-    fileUrl:data.Location
-}
-// console.log('upload data -',dataObject);
+                    let dataObject = {
+                        fileName: data.Key.split('/')[1],
+                        fileUrl: data.Location
+                    }
+
                     resolve(dataObject)
 
                 }
             })
         })
     }
-console.log('upload middleware-----------------',req.files);
+
 
     if (req.files != undefined) {
         let fileArray = req.files
@@ -49,14 +49,14 @@ console.log('upload middleware-----------------',req.files);
 
 
         Promise.all(uploadedDataArray).then((fileUrls) => {
-// console.log(fileUrls);
+
 
             req.attachments = fileUrls
 
             next()
         })
             .catch((err) => {
-                req.uploadErr=err
+                req.uploadErr = err
                 next();
             })
     }

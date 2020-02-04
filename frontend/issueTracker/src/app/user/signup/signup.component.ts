@@ -38,9 +38,9 @@ export class SignupComponent implements OnInit {
         response => {
           if (response['status'] == 200) {
             this.hitApis.setLocalStorage(response['data']['userDetails']);
-            this.toastr.success('You have successfully signed in.');
+            this.toastr.success('You have successfully signed in. Please Login to view dashboard.');
             setTimeout(() => {
-              this._router.navigate(['/dashboard']);
+              this._router.navigate(['/login']);
             }, 2000);
           }
           else {

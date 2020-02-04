@@ -3,21 +3,16 @@ const moment = require('moment')
     , timezone = 'Asia/Kolkata'
 
 let now = () => {
-    // console.log(moment.utc().format('DD-MM-YYYY'),typeof(moment.utc().format('DD-MM-YYYY')));
-    
+
     return moment.utc().format()
 }
 
-let formatCurrentDate=()=>{
-    return moment().format('llll')
-}
 
-let parseToMyFormat=()=>{
 
-        return moment().format('YYYY-MM-DD')
+let parseToMyFormat = () => {
 
-        
-    
+    return moment().format('YYYY-MM-DD')
+
 }
 
 let getLocalTime = () => {
@@ -33,6 +28,5 @@ module.exports = {
     now: now,
     getLocalTime: getLocalTime,
     convertToLocalTime: convertToLocalTime,
-    parseToMyFormat:parseToMyFormat,
-    // formatCurrentDate:formatCurrentDate
+    parseToMyFormat: parseToMyFormat
 }

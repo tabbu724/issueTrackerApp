@@ -1,44 +1,41 @@
-const redis=require('redis')
-,redisClient=redis.createClient()
-,checkLib=require('../libraries/checkLib')
+const redis = require('redis')
+    , redisClient = redis.createClient()
+    , checkLib = require('../libraries/checkLib')
 
-redisClient.on('connect',()=>{
+redisClient.on('connect', () => {
     console.log('Redis connection successfull.');
 })
 
-let createHash=(hashname,key,value,cb)=>{
-    // console.log(hashname,key,value);
-    
-    redisClient.hmset(hashname,key,value,(err,result)=>{
+let createHash = (hashname, key, value, cb) => {
+
+    redisClient.hmset(hashname, key, value, (err, result) => {
         if (err) {
-            // console.log('Error in creating hash.');
+
             cb(err, null)
         }
         else if (checkLib.isEmpty(result)) {
-            // console.log('No hash created.');
-            // console.log(result);
+
             cb(null, [])
         }
         else {
-            // console.log('Hash created.', result);
+
             cb(null, result)
         }
     })
 }
 
-let showHash=(hashname,cb)=>{
+let showHash = (hashname, cb) => {
     redisClient.hgetall(hashname, (err, result) => {
         if (err) {
-            // console.log('error in getting all comments');
+
             cb(err, null)
         }
         else if (checkLib.isEmpty(result)) {
-            // console.log('No comments found');
-            // console.log(result);
+
             cb(null, [])
         }
         else {
-            // console.log('All comments found', result);
+
             cb(null, result)
         }
     })
@@ -47,7 +44,7 @@ let showHash=(hashname,cb)=>{
 
 
 
-module.exports={
-    createHash:createHash,
-    showHash:showHash
+module.exports = {
+    createHash: createHash,
+    showHash: showHash
 }
