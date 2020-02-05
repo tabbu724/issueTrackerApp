@@ -6,24 +6,6 @@ const notificationModel = require('../models/notification')
     , issueModel = require('../models/issueDetails')
     , userModel = require('../models/user')
 
-let saveNotifications = (userId, issueId, msg) => {
-    let notifyDoc = new notificationModel({
-        userId: userId,
-        issueId: issueId,
-        msg: msg
-    })
-    notifyDoc.save((err, savedInfo) => {
-        if (err) {
-
-            loggerLib.captureError(err.message, 10, 'notifyController/saveNotifications')
-
-        }
-        else {
-            loggerLib.captureInfo(savedInfo, 0, 'notifyController/saveNotifications')
-
-        }
-    })
-}
 
 let showNotifications = (req, res) => {
     notificationModel.find({ userId: req.params.userId }, (err, notifications) => {
@@ -39,11 +21,15 @@ let showNotifications = (req, res) => {
             let response = responseLib.formatResponse(false, 'Notification history found.', 200, notifications)
             res.send(response);
         }
-    })
+    }).select('-__v -_id')
 }
 
 let generateNotificationHistoryForReporter = (req, res) => {
+    console.log(req.body.issueId, 'issueId');
+
     issueModel.findOne({ issueId: req.body.issueId }, (err, issueDetails) => {
+        console.log(issueDetails, 'issueDetails');
+
         if (err) {
             let response = responseLib.formatResponse(true, err.message, 500, null)
             res.send(response);
@@ -66,9 +52,28 @@ let generateNotificationHistoryForReporter = (req, res) => {
                 else {
                     loggerLib.captureInfo('reporter to be notified is found', 0, 'notifyController/generateNotificationHistoryForReporter')
                     let reporterId = userDetails.userId
-                    saveNotifications(reporterId, req.body.issueId, req.body.msg)
-                    let response = responseLib.formatResponse(false, 'Notification history created for reporter.', 200, null)
-                    res.send(response);
+
+                    let notifyDoc = new notificationModel({
+                        userId: reporterId,
+                        issueId: req.body.issueId,
+                        msg: req.body.msg
+                    })
+                    notifyDoc.save((err, savedInfo) => {
+                        if (err) {
+
+                            loggerLib.captureError(err.message, 10, 'notifyController/saveNotifications')
+
+                        }
+                        else {
+                            loggerLib.captureInfo(savedInfo, 0, 'notifyController/saveNotifications')
+                            let notification = savedInfo.toObject()
+                            delete notification.__v
+                            delete notification._id
+                            let response = responseLib.formatResponse(false, 'Notification history created for reporter.', 200, notification)
+                            res.send(response);
+                        }
+                    })
+
 
                 }
             })
@@ -90,16 +95,33 @@ let generateNotificationHistoryForWatcher = (req, res) => {
                 watcherList.push(key)
             }
             watcherList.forEach(watcher => {
-                saveNotifications(watcher, req.body.issueId, req.body.msg)
+                let notifyDoc = new notificationModel({
+                    userId: watcher,
+                    issueId: req.body.issueId,
+                    msg: req.body.msg
+                })
+                notifyDoc.save((err, savedInfo) => {
+                    if (err) {
+
+                        loggerLib.captureError(err.message, 10, 'notifyController/saveNotifications')
+
+                    }
+                    else {
+                        loggerLib.captureInfo(savedInfo, 0, 'notifyController/saveNotifications')
+                        let notification = savedInfo.toObject()
+                        delete notification.__v
+                        delete notification._id
+                        let response = responseLib.formatResponse(false, 'Notification history created for watchers.', 200, notification)
+                        res.send(response);
+                    }
+                })
             });
-            let response = responseLib.formatResponse(false, 'Notification history created for watchers.', 200, null)
-            res.send(response);
+
         }
     })
 }
 
 module.exports = {
-    saveNotifications: saveNotifications,
     showNotifications: showNotifications,
     generateNotificationHistoryForReporter: generateNotificationHistoryForReporter,
     generateNotificationHistoryForWatcher: generateNotificationHistoryForWatcher

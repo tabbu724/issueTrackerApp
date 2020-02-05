@@ -146,7 +146,7 @@ define({ "api": [
   {
     "type": "post",
     "url": "/notificationHistory/:userId",
-    "title": "To view notification history",
+    "title": "To save notification history for reporters",
     "name": "Reporter_Notification_History",
     "version": "1.0.0",
     "group": "Create",
@@ -181,7 +181,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n          \n          }\n      }",
+          "content": "{\n    \"err\": false,\n    \"message\": \"Notification history created for reporter.\",\n    \"status\": 200,\n    \"data\": {\n        \"creationDate\": string,\n        \"userId\": string,\n        \"issueId\": string,\n        \"msg\": string\n    }\n}",
           "type": "json"
         }
       ]
@@ -201,7 +201,7 @@ define({ "api": [
   {
     "type": "post",
     "url": "/notificationHistory/:userId",
-    "title": "To view notification history",
+    "title": "To save notification history for watchers",
     "name": "Watcher_Notification_History",
     "version": "1.0.0",
     "group": "Create",
@@ -236,7 +236,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n             \n             }\n         }",
+          "content": "{\n    \"err\": false,\n    \"message\": \"Notification history created for watchers.\",\n    \"status\": 200,\n    \"data\": {\n        \"creationDate\": string,\n        \"userId\": string,\n        \"issueId\": string,\n        \"msg\": string\n    }\n}",
           "type": "json"
         }
       ]
@@ -712,7 +712,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "{\n       \n       }\n   }",
+          "content": "{\n    \"err\": false,\n    \"message\": \"Notification history found.\",\n    \"status\": 200,\n    \"data\": [\n        {\n            \"creationDate\":string ,\n            \"userId\":string ,\n            \"issueId\":string ,\n            \"msg\": string\n        },\n    ]\n   }",
           "type": "json"
         }
       ]

@@ -1087,8 +1087,17 @@ let setRouter = (app) => {
         * @apiParam {string} authToken Pass the authToken as header
         * @apiSuccessExample {json} Success-Response:
         * {
-       
-       }
+    "err": false,
+    "message": "Notification history found.",
+    "status": 200,
+    "data": [
+        {
+            "creationDate":string ,
+            "userId":string ,
+            "issueId":string ,
+            "msg": string
+        },
+    ]
    }
         * @apiErrorExample {json} Error-Response:
         * {
@@ -1103,7 +1112,7 @@ let setRouter = (app) => {
 
 
        app.post(baseUrl + '/ReporterNotificationHistory', authMiddleware.authorisation, notifyController.generateNotificationHistoryForReporter)
-       /**@api {post} /notificationHistory/:userId To view notification history
+       /**@api {post} /notificationHistory/:userId To save notification history for reporters
         * @apiName Reporter Notification History
            * @apiVersion 1.0.0
            * @apiGroup Create
@@ -1112,9 +1121,17 @@ let setRouter = (app) => {
            * @apiParam {string} authToken Pass the authToken as header
            * @apiSuccessExample {json} Success-Response:
            * {
-          
-          }
-      }
+    "err": false,
+    "message": "Notification history created for reporter.",
+    "status": 200,
+    "data": {
+        "creationDate": string,
+        "userId": string,
+        "issueId": string,
+        "msg": string
+    }
+}
+      
            * @apiErrorExample {json} Error-Response:
            * {
           "err": true,
@@ -1127,7 +1144,7 @@ let setRouter = (app) => {
            */
 
           app.post(baseUrl + '/WatcherNotificationHistory', authMiddleware.authorisation, notifyController.generateNotificationHistoryForWatcher)
-          /**@api {post} /notificationHistory/:userId To view notification history
+          /**@api {post} /notificationHistory/:userId To save notification history for watchers
            * @apiName Watcher Notification History
               * @apiVersion 1.0.0
               * @apiGroup Create
@@ -1136,9 +1153,16 @@ let setRouter = (app) => {
               * @apiParam {string} authToken Pass the authToken as header
               * @apiSuccessExample {json} Success-Response:
               * {
-             
-             }
-         }
+    "err": false,
+    "message": "Notification history created for watchers.",
+    "status": 200,
+    "data": {
+        "creationDate": string,
+        "userId": string,
+        "issueId": string,
+        "msg": string
+    }
+}
               * @apiErrorExample {json} Error-Response:
               * {
              "err": true,
