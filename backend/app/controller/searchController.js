@@ -5,7 +5,11 @@ const issueModel = require('../models/issueDetails')
 
 let searchIssue = (req, res) => {
     let searchString = req.params.text
-
+if(checkLib.isEmpty(searchString)){
+    let response = responseLib.formatResponse(true, 'Search data cannot be empty.', 404, null)
+    res.send(response);
+}
+else{
     let searchCriteria = { $text: { $search: searchString } }
 
     issueModel.find(searchCriteria, (err, data) => {
@@ -23,6 +27,8 @@ let searchIssue = (req, res) => {
             res.send(response)
         }
     })
+}
+    
 }
 
 let sortColsForSearchText = (req, res) => {
