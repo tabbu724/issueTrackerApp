@@ -53,7 +53,8 @@ export class SearchComponent implements OnInit {
       error => {
         this.resultsAvailable = false
         let message = this.hitApis.handleError(error);
-        this.toastr.error(message)
+        this.toastr.error('Invalid search.You tried to search for space value.')
+        this._router.navigate(['/notFound'])
       }
     )
   }

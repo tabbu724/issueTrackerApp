@@ -29,7 +29,8 @@ import { NotFoundComponent } from './not-found/not-found.component';
      [
       {path:'login',component:LoginComponent},
       {path:'**',component:NotFoundComponent},
-      {path:'',redirectTo:'login',pathMatch:'full'}
+      {path:'',redirectTo:'login',pathMatch:'full'},
+      {path:'notFound',component:NotFoundComponent}
      ]
     ),
 CookieModule.forRoot(),
