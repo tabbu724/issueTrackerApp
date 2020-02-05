@@ -121,7 +121,8 @@ let filterRowsByDate = (req, res) => {
     , searchString = req.params.text
 
     , searchCriteria = { creationDateString:dateToSearch , $text: { $search: searchString } }
-    
+    console.log(dateToSearch,searchString,);
+
     if(validateLib.validateDateFormat(dateToSearch)){
         issueModel.find(searchCriteria
             , (err, dateBasedIssueDetails) => {

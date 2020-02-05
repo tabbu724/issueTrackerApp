@@ -65,7 +65,7 @@ export class SearchComponent implements OnInit {
       reporterId: false,
       title: true
     }
-    this.hitApis.sortSearch(values, this.authToken).subscribe(
+    this.hitApis.sortSearch(values,this.searchString, this.authToken).subscribe(
       response => {
         if (response['status'] == 200) {
           this.formatDate(response)
@@ -88,7 +88,7 @@ export class SearchComponent implements OnInit {
       reporterId: false,
       title: false
     }
-    this.hitApis.sortSearch(values, this.authToken).subscribe(
+    this.hitApis.sortSearch(values,this.searchString, this.authToken).subscribe(
       response => {
         if (response['status'] == 200) {
           this.formatDate(response)
@@ -111,7 +111,7 @@ export class SearchComponent implements OnInit {
       reporterId: true,
       title: false
     }
-    this.hitApis.sortSearch(values, this.authToken).subscribe(
+    this.hitApis.sortSearch(values,this.searchString, this.authToken).subscribe(
       response => {
         if (response['status'] == 200) {
           this.formatDate(response)
@@ -134,7 +134,7 @@ export class SearchComponent implements OnInit {
       reporterId: false,
       title: false
     }
-    this.hitApis.sortSearch(values, this.authToken).subscribe(
+    this.hitApis.sortSearch(values,this.searchString, this.authToken).subscribe(
       response => {
         if (response['status'] == 200) {
           this.formatDate(response)
@@ -162,7 +162,7 @@ export class SearchComponent implements OnInit {
 
   filterIssues = () => {
     if (this.ftitle == true) {
-      this.hitApis.filterRowsByTitleSearchView(this.filterText, this.authToken).subscribe(
+      this.hitApis.filterRowsByTitleSearchView(this.filterText, this.searchString,this.authToken).subscribe(
         response => {
           if (response['status'] == 200) {
             this.ftitle = false
@@ -182,7 +182,7 @@ export class SearchComponent implements OnInit {
       )
     }
     else if (this.fstatus) {
-      this.hitApis.filterRowsByStatusSearchView(this.filterText, this.authToken).subscribe(
+      this.hitApis.filterRowsByStatusSearchView(this.filterText, this.searchString,this.authToken).subscribe(
         response => {
           if (response['status'] == 200) {
             this.fstatus = false
@@ -205,7 +205,7 @@ export class SearchComponent implements OnInit {
       let dateToSearch = this.filterText
 
 
-      this.hitApis.filterRowsByDateSearchView(dateToSearch, this.authToken).subscribe(
+      this.hitApis.filterRowsByDateSearchView(dateToSearch,this.searchString, this.authToken).subscribe(
         response => {
           if (response['status'] == 200) {
             this.formatDate(response)
@@ -226,7 +226,7 @@ export class SearchComponent implements OnInit {
       )
     }
     else if (this.freporter) {
-      this.hitApis.filterRowsByReporterIdSearchView(this.filterText, this.authToken).subscribe(
+      this.hitApis.filterRowsByReporterIdSearchView(this.filterText,this.searchString, this.authToken).subscribe(
         response => {
           if (response['status'] == 200) {
             this.freporter = false

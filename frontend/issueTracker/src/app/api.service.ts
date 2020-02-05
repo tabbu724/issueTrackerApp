@@ -4,7 +4,7 @@ import { HttpClient, HttpErrorResponse, HttpParams, HttpHeaders } from "@angular
   providedIn: 'root'
 })
 export class ApiService {
-  public searchString
+  // public searchString
   public singleIssueId
   public createIssueFlag
   public showIssueFlag
@@ -99,30 +99,30 @@ export class ApiService {
     return response;
   }
 
-  filterRowsByStatusSearchView = (status, authToken) => {
+  filterRowsByStatusSearchView = (status,searchString, authToken) => {
     const header = new HttpHeaders().set('authToken', authToken)
-      , text = this.searchString
+      , text = searchString
     let response = this.http.get(`${this.baseUrl}/filterByStatus/${status}/${text}`, { headers: header });
     return response;
   }
 
-  filterRowsByDateSearchView = (creationDate, authToken) => {
+  filterRowsByDateSearchView = (creationDate,searchString,  authToken) => {
     const header = new HttpHeaders().set('authToken', authToken)
-      , text = this.searchString
+      , text = searchString
     let response = this.http.get(`${this.baseUrl}/filterByDate/${creationDate}/${text}`, { headers: header });
     return response;
   }
 
-  filterRowsByReporterIdSearchView = (reporterName, authToken) => {
+  filterRowsByReporterIdSearchView = (reporterName,searchString,  authToken) => {
     const header = new HttpHeaders().set('authToken', authToken)
-      , text = this.searchString
+      , text = searchString
     let response = this.http.get(`${this.baseUrl}/filterByReporter/${reporterName}/${text}`, { headers: header });
     return response;
   }
 
-  filterRowsByTitleSearchView = (title, authToken) => {
+  filterRowsByTitleSearchView = (title,searchString,  authToken) => {
     const header = new HttpHeaders().set('authToken', authToken)
-      , text = this.searchString
+      , text = searchString
     let response = this.http.get(`${this.baseUrl}/filterByTitle/${title}/${text}`, { headers: header });
     return response;
   }
@@ -143,8 +143,8 @@ export class ApiService {
     return response;
   }
 
-  sortSearch = (data, authToken) => {
-    let text = this.searchString
+  sortSearch = (data, searchString, authToken) => {
+    let text = searchString
     let header = new HttpHeaders(
       {
         'authToken': authToken
