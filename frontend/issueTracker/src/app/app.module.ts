@@ -12,6 +12,7 @@ import { LoginComponent } from './user/login/login.component';
 import { UserModule } from './user/user.module';
 import { IssueModule } from './issue/issue.module';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { SignupComponent } from './user/signup/signup.component';
 
 
 
@@ -37,6 +38,6 @@ CookieModule.forRoot(),
 
   ],
   providers: [ApiService,SocketService],
-  bootstrap: [AppComponent]
+  bootstrap: [SignupComponent]
 })
 export class AppModule { }

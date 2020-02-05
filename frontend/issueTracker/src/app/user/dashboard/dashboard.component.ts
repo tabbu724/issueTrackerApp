@@ -312,6 +312,7 @@ export class DashboardComponent implements OnInit {
           this.cookie.remove('authToken')
           this.cookie.remove('userId')
           this.cookie.remove('userName')
+          this.hitApis.deleteFromLocalstorage('userDetails')
           this.toastr.success('Successfully logged out.')
           this.disconnect()
           this._router.navigate(['/login'])
